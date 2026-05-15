@@ -32,6 +32,7 @@ export default function POSPage() {
   const [qrisDataUrl, setQrisDataUrl] = useState('')
   const [showCart, setShowCart] = useState(false)
   const [showMenu, setShowMenu] = useState(false)
+  const [payLoading, setPayLoading] = useState(false)
   const [discounts, setDiscounts] = useState<Discount[]>([])
   const [discountsLoaded, setDiscountsLoaded] = useState(false)
   const receiptRef = useRef<HTMLDivElement>(null)
@@ -120,6 +121,7 @@ export default function POSPage() {
 
   async function handlePay() {
     const amount = parseFloat(payAmount) || total
+    setPayLoading(true)
     const res = await fetch('/api/transactions', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -129,6 +131,7 @@ export default function POSPage() {
       }),
     })
     const data = await res.json()
+    setPayLoading(false)
     if (res.ok) {
       setReceipt({
         invoiceNo: data.invoiceNo, items: cart,
@@ -364,6 +367,17 @@ export default function POSPage() {
               <button onClick={() => { setShowCart(false); setShowPay(true) }} disabled={cart.length === 0}
                 className="w-full bg-gray-800 text-white py-3 rounded-xl font-bold disabled:opacity-40 transition">Bayar</button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Loading overlay saat proses pembayaran */}
+      {payLoading && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl px-8 py-6 shadow-2xl text-center">
+            <div className="animate-spin w-8 h-8 border-3 border-gray-300 border-t-gray-800 rounded-full mx-auto mb-3"></div>
+            <p className="text-gray-800 font-medium text-sm">Memproses pembayaran...</p>
+            <p className="text-gray-400 text-xs mt-1">Please wait</p>
           </div>
         </div>
       )}

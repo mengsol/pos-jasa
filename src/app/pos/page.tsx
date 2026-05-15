@@ -330,27 +330,27 @@ export default function POSPage() {
           <div className="bg-white rounded-lg p-6 w-80 relative overflow-hidden">
             <div
               aria-hidden
-              className="absolute inset-0 bg-[url('/bg2.jpg')] bg-contain bg-center bg-no-repeat opacity-50 pointer-events-none"
+              className="absolute inset-0 bg-[url('/bg2.jpg')] bg-contain bg-center bg-no-repeat opacity-20 pointer-events-none"
             />
-            <div className="relative">
+            <div className="relative text-black">
             <div ref={receiptRef}>
-              <div className="center bold" style={{fontSize:'14px'}}>AYUNDA BEAUTY STUDIO</div>
-              <div className="center sm">{receipt.createdAt}</div>
+              <div className="center bold" style={{fontSize:'14px', color:'#000'}}>AYUNDA BEAUTY STUDIO</div>
+              <div className="center sm" style={{color:'#333'}}>{receipt.createdAt}</div>
               <div className="line" />
-              <div className="sm">No : {receipt.invoiceNo}</div>
-              <div className="sm">Kasir: {receipt.cashierName}</div>
+              <div className="sm" style={{color:'#000'}}>No : {receipt.invoiceNo}</div>
+              <div className="sm" style={{color:'#000'}}>Kasir: {receipt.cashierName}</div>
               <div className="line" />
               <table>
                 <tbody>
                   {receipt.items.map((item, i) => (
                     <tr key={i}>
-                      <td colSpan={3} style={{fontSize:'10px'}}>{item.serviceName}</td>
+                      <td colSpan={3} style={{fontSize:'10px', color:'#000'}}>{item.serviceName}</td>
                     </tr>
                   ))}
                   {receipt.items.map((item, i) => (
                     <tr key={'d'+i}>
-                      <td style={{fontSize:'10px',paddingLeft:'8px'}}>{item.qty} x {fmt(item.price)}</td>
-                      <td className="right" style={{fontSize:'10px'}}>{fmt(item.subtotal)}</td>
+                      <td style={{fontSize:'10px',paddingLeft:'8px', color:'#000'}}>{item.qty} x {fmt(item.price)}</td>
+                      <td className="right" style={{fontSize:'10px', color:'#000'}}>{fmt(item.subtotal)}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -358,21 +358,21 @@ export default function POSPage() {
               <div className="line" />
               <table>
                 <tbody>
-                  <tr><td className="bold">TOTAL</td><td className="right bold">{fmt(receipt.totalAmount)}</td></tr>
+                  <tr><td className="bold" style={{color:'#000'}}>TOTAL</td><td className="right bold" style={{color:'#000'}}>{fmt(receipt.totalAmount)}</td></tr>
                   {receipt.payments.map((p, i) => (
-                    <tr key={i}><td className="sm">{p.method.toUpperCase()}</td><td className="right sm">{fmt(p.amount)}</td></tr>
+                    <tr key={i}><td className="sm" style={{color:'#000'}}>{p.method.toUpperCase()}</td><td className="right sm" style={{color:'#000'}}>{fmt(p.amount)}</td></tr>
                   ))}
                   {receipt.payments[0]?.method === 'cash' && receipt.payments[0].amount > receipt.totalAmount && (
-                    <tr><td className="sm">KEMBALIAN</td><td className="right sm">{fmt(receipt.payments[0].amount - receipt.totalAmount)}</td></tr>
+                    <tr><td className="sm" style={{color:'#000'}}>KEMBALIAN</td><td className="right sm" style={{color:'#000'}}>{fmt(receipt.payments[0].amount - receipt.totalAmount)}</td></tr>
                   )}
                 </tbody>
               </table>
               <div className="line" />
-              <div className="center sm">Terima kasih!</div>
+              <div className="center sm" style={{color:'#333'}}>Terima kasih!</div>
               </div>
             <div className="flex gap-2 mt-4">
-              <button onClick={printReceipt} className="flex-1 bg-blue-600 text-white py-2 rounded font-bold">Print Struk</button>
-              <button onClick={() => setReceipt(null)} className="flex-1 bg-gray-300 py-2 rounded text-gray-700">Tutup</button>
+              <button onClick={printReceipt} className="flex-1 bg-gray-800 text-white py-2 rounded-xl font-bold">Print Struk</button>
+              <button onClick={() => setReceipt(null)} className="flex-1 bg-gray-200 py-2 rounded-xl text-gray-700 font-medium">Tutup</button>
             </div>
             </div>
           </div>

@@ -17,7 +17,12 @@ export default function PembukuanPage() {
   const router = useRouter()
 
   useEffect(() => {
-    fetch('/api/auth/me').then(r => { if (!r.ok) router.push('/login') })
+    fetch('/api/auth/me').then(r => {
+      if (!r.ok) { router.push('/login'); return }
+      return r.json()
+    }).then(d => {
+      if (d && d.role !== 'admin') router.push('/pos')
+    })
   }, [router])
 
   useEffect(() => { loadData() }, [from, to, tab])

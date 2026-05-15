@@ -5,10 +5,14 @@ import QRCode from 'qrcode'
 
 interface Service {
   id: string; name: string; price: number
+  categoryId?: string | null
   category?: { name: string } | null
 }
 interface CartItem {
-  serviceId: string; serviceName: string; qty: number; price: number; subtotal: number
+  serviceId: string; serviceName: string; qty: number; price: number; originalPrice: number; discountPercent: number; subtotal: number
+}
+interface Discount {
+  id: string; type: string; targetId: string; discountPercent: number
 }
 interface ReceiptData {
   invoiceNo: string; items: CartItem[]; payments: { method: string; amount: number }[]
@@ -28,6 +32,7 @@ export default function POSPage() {
   const [qrisDataUrl, setQrisDataUrl] = useState('')
   const [showCart, setShowCart] = useState(false)
   const [showMenu, setShowMenu] = useState(false)
+  const [discounts, setDiscounts] = useState<Discount[]>([])
   const receiptRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
 
@@ -36,6 +41,7 @@ export default function POSPage() {
     const authPromise = fetch('/api/auth/me')
     const servicesPromise = fetch('/api/services')
     const settingsPromise = fetch('/api/settings')
+    const discountsPromise = fetch('/api/discounts/active')
 
     authPromise.then(r => {
       if (!r.ok) { router.push('/login'); return }
@@ -49,6 +55,10 @@ export default function POSPage() {
 
     settingsPromise.then(r => r.json()).then(s => {
       if (s.qris_merchant_id) setQrisUrl(s.qris_merchant_id)
+    })
+
+    discountsPromise.then(r => r.json()).then(data => {
+      if (Array.isArray(data)) setDiscounts(data)
     })
 
     // Show cached services immediately while fetching fresh data
@@ -69,14 +79,29 @@ export default function POSPage() {
     s.name.toLowerCase().includes(search.toLowerCase())
   )
 
+  function getDiscountForService(svc: Service): number {
+    // Check item-level discount first
+    const itemDiscount = discounts.find(d => d.type === 'service' && d.targetId === svc.id)
+    if (itemDiscount) return itemDiscount.discountPercent
+    // Check category-level discount
+    if (svc.categoryId) {
+      const catDiscount = discounts.find(d => d.type === 'category' && d.targetId === svc.categoryId)
+      if (catDiscount) return catDiscount.discountPercent
+    }
+    return 0
+  }
+
   function addToCart(svc: Service) {
+    const discPct = getDiscountForService(svc)
+    const discountedPrice = discPct > 0 ? Math.round(svc.price * (1 - discPct / 100)) : svc.price
+
     setCart(prev => {
       const existing = prev.find(i => i.serviceId === svc.id)
       if (existing) {
         return prev.map(i => i.serviceId === svc.id
           ? { ...i, qty: i.qty + 1, subtotal: (i.qty + 1) * i.price } : i)
       }
-      return [...prev, { serviceId: svc.id, serviceName: svc.name, qty: 1, price: svc.price, subtotal: svc.price }]
+      return [...prev, { serviceId: svc.id, serviceName: svc.name, qty: 1, price: discountedPrice, originalPrice: svc.price, discountPercent: discPct, subtotal: discountedPrice }]
     })
   }
 
@@ -194,10 +219,20 @@ export default function POSPage() {
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
               {filtered.map(svc => (
                 <button key={svc.id} onClick={() => addToCart(svc)}
-                  className="bg-white/75 backdrop-blur-sm p-4 md:p-5 rounded-2xl shadow-md hover:shadow-lg hover:bg-white/90 transition-all duration-200 text-left border border-white/50">
+                  className="bg-white/75 backdrop-blur-sm p-4 md:p-5 rounded-2xl shadow-md hover:shadow-lg hover:bg-white/90 transition-all duration-200 text-left border border-white/50 relative">
+                  {getDiscountForService(svc) > 0 && (
+                    <span className="absolute top-2 right-2 bg-red-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-lg">-{getDiscountForService(svc)}%</span>
+                  )}
                   <p className="font-bold text-gray-900 text-sm md:text-base">{svc.name}</p>
                   <p className="text-xs md:text-sm text-gray-500 mt-0.5">{svc.category?.name}</p>
-                  <p className="text-gray-800 font-bold mt-1 md:mt-2 text-base md:text-lg">{fmt(svc.price)}</p>
+                  {getDiscountForService(svc) > 0 ? (
+                    <div className="mt-1 md:mt-2">
+                      <p className="text-gray-400 line-through text-xs">{fmt(svc.price)}</p>
+                      <p className="text-red-600 font-bold text-base md:text-lg">{fmt(Math.round(svc.price * (1 - getDiscountForService(svc) / 100)))}</p>
+                    </div>
+                  ) : (
+                    <p className="text-gray-800 font-bold mt-1 md:mt-2 text-base md:text-lg">{fmt(svc.price)}</p>
+                  )}
                 </button>
               ))}
             </div>

@@ -81,18 +81,18 @@ export default function AdminPage() {
   if (!user) return null
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <div className="bg-blue-600 text-white px-4 py-3 flex justify-between items-center">
-        <h1 className="text-lg font-bold">Admin - Master Jasa</h1>
+    <div className="min-h-screen bg-gray-50">
+      <div className="bg-gray-800 text-white px-4 py-3 flex justify-between items-center">
+        <h1 className="text-lg font-bold tracking-wide">⚙️ Admin — Master Jasa</h1>
         <div className="flex items-center gap-2">
-          <button onClick={() => router.push('/users')} className="text-sm bg-purple-500 px-3 py-1 rounded hover:bg-purple-400">Users</button>
-          <button onClick={() => router.push('/pos')} className="text-sm bg-blue-500 px-3 py-1 rounded hover:bg-blue-400">Kembali ke POS</button>
+          <button onClick={() => router.push('/users')} className="text-sm bg-gray-700 px-3 py-1.5 rounded-lg hover:bg-gray-600 transition">👥 Users</button>
+          <button onClick={() => router.push('/pos')} className="text-sm bg-gray-700 px-3 py-1.5 rounded-lg hover:bg-gray-600 transition">← Back to Main</button>
         </div>
       </div>
 
       <div className="max-w-5xl mx-auto p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Form Jasa */}
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
           <h2 className="font-bold text-gray-800 mb-4">{editId ? 'Edit Jasa' : 'Tambah Jasa'}</h2>
           <form onSubmit={handleSaveService} className="space-y-3">
             <input type="text" placeholder="Nama Jasa" value={name} onChange={e => setName(e.target.value)}
@@ -114,7 +114,7 @@ export default function AdminPage() {
         </div>
 
         {/* Form Kategori */}
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
           <h2 className="font-bold text-gray-800 mb-4">Tambah Kategori</h2>
           <form onSubmit={handleAddCategory} className="flex gap-2">
             <input type="text" placeholder="Nama Kategori" value={newCat} onChange={e => setNewCat(e.target.value)}
@@ -129,7 +129,7 @@ export default function AdminPage() {
         </div>
 
         {/* Daftar Jasa */}
-        <div className="bg-white rounded-lg shadow p-6 md:col-span-2">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:col-span-2">
           {/* QRIS Settings */}
           <div className="mb-6 p-4 bg-purple-50 rounded-lg border border-purple-200">
             <h3 className="font-bold text-purple-800 mb-2">QRIS Settings</h3>

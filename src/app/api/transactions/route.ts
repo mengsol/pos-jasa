@@ -13,6 +13,8 @@ export async function GET(req: NextRequest) {
 
   const where: Record<string, unknown> = { status: 'completed' }
   if (user.outletId) where.outletId = user.outletId
+  const userId = url.searchParams.get('userId')
+  if (userId) where.userId = userId
   if (from && to) {
     where.createdAt = { gte: new Date(from), lte: new Date(to + 'T23:59:59') }
   }

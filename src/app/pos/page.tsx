@@ -142,14 +142,21 @@ export default function POSPage() {
         <h1 className="text-lg font-bold tracking-wide">Ayunda Beauty Studio</h1>
         <div className="flex items-center gap-3">
           <span className="text-sm text-gray-300">{user?.name} ({user?.role})</span>
-          {user?.role === 'admin' && (
-            <>
-              <button onClick={() => router.push('/admin')} className="text-sm bg-gray-600 px-3 py-1 rounded hover:bg-gray-500">Admin</button>
-              <button onClick={() => router.push('/users')} className="text-sm bg-gray-600 px-3 py-1 rounded hover:bg-gray-500">Users</button>
-            </>
-          )}
-          <button onClick={() => router.push('/pembukuan')} className="text-sm bg-gray-600 px-3 py-1 rounded hover:bg-gray-500">Pembukuan</button>
-          <button onClick={handleLogout} className="text-sm bg-red-600/80 px-3 py-1 rounded hover:bg-red-500">Logout</button>
+          <div className="relative group">
+            <button className="text-sm bg-gray-700 px-3 py-1.5 rounded-lg hover:bg-gray-600 transition">☰ Menu</button>
+            <div className="absolute right-0 top-full mt-1 bg-gray-800 border border-gray-700 rounded-xl shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 min-w-[140px] py-1 z-50">
+              {user?.role === 'admin' && (
+                <>
+                  <button onClick={() => router.push('/admin')} className="w-full text-left text-sm px-4 py-2 hover:bg-gray-700 transition">⚙️ Admin</button>
+                  <button onClick={() => router.push('/users')} className="w-full text-left text-sm px-4 py-2 hover:bg-gray-700 transition">👥 Users</button>
+                </>
+              )}
+              <button onClick={() => router.push('/pembukuan')} className="w-full text-left text-sm px-4 py-2 hover:bg-gray-700 transition">📊 Report</button>
+              <button onClick={() => router.push('/transaksi')} className="w-full text-left text-sm px-4 py-2 hover:bg-gray-700 transition">🧾 Transaksi</button>
+              <div className="border-t border-gray-700 my-1" />
+              <button onClick={handleLogout} className="w-full text-left text-sm px-4 py-2 text-red-400 hover:bg-gray-700 transition">🚪 Logout</button>
+            </div>
+          </div>
         </div>
       </div>
 

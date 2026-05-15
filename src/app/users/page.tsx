@@ -151,34 +151,34 @@ export default function UsersPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <div className="bg-blue-600 text-white px-4 py-3 flex justify-between items-center">
-        <h1 className="text-lg font-bold">User Management — Ayunda Beauty Studio</h1>
+    <div className="min-h-screen bg-gray-50">
+      <div className="bg-gray-800 text-white px-4 py-3 flex justify-between items-center">
+        <h1 className="text-lg font-bold tracking-wide">👥 User Management</h1>
         <div className="flex items-center gap-2">
           <button
             onClick={() => router.push('/pos')}
-            className="text-sm bg-blue-500 px-3 py-1 rounded hover:bg-blue-400"
+            className="text-sm bg-gray-700 px-3 py-1.5 rounded-lg hover:bg-gray-600 transition"
           >
-            POS
+            ← Back to Main
           </button>
           <button
             onClick={() => router.push('/admin')}
-            className="text-sm bg-blue-500 px-3 py-1 rounded hover:bg-blue-400"
+            className="text-sm bg-gray-700 px-3 py-1.5 rounded-lg hover:bg-gray-600 transition"
           >
-            Admin
+            ⚙️ Admin
           </button>
           <button
             onClick={() => router.push('/pembukuan')}
-            className="text-sm bg-green-500 px-3 py-1 rounded hover:bg-green-400"
+            className="text-sm bg-gray-700 px-3 py-1.5 rounded-lg hover:bg-gray-600 transition"
           >
-            Pembukuan
+            📊 Report
           </button>
         </div>
       </div>
 
       <div className="p-6 grid md:grid-cols-3 gap-6">
         {/* Form */}
-        <div className="bg-white rounded-lg shadow p-4">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
           <h2 className="font-bold text-gray-800 mb-3">
             {editId ? 'Edit User' : 'Add User'}
           </h2>
@@ -275,7 +275,7 @@ export default function UsersPage() {
         </div>
 
         {/* List */}
-        <div className="md:col-span-2 bg-white rounded-lg shadow p-4">
+        <div className="md:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
           <h2 className="font-bold text-gray-800 mb-3">Daftar User</h2>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">

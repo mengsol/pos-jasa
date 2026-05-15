@@ -163,10 +163,10 @@ export default function POSPage() {
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
               {filtered.map(svc => (
                 <button key={svc.id} onClick={() => addToCart(svc)}
-                  className="bg-white/75 backdrop-blur-sm p-4 rounded-lg shadow hover:shadow-md hover:bg-white/90 transition text-left">
-                  <p className="font-bold text-gray-900">{svc.name}</p>
-                  <p className="text-sm text-gray-500">{svc.category?.name}</p>
-                  <p className="text-gray-800 font-bold mt-1">{fmt(svc.price)}</p>
+                  className="bg-white/75 backdrop-blur-sm p-5 rounded-2xl shadow-md hover:shadow-lg hover:bg-white/90 transition-all duration-200 text-left border border-white/50">
+                  <p className="font-bold text-gray-900 text-base">{svc.name}</p>
+                  <p className="text-sm text-gray-500 mt-0.5">{svc.category?.name}</p>
+                  <p className="text-gray-800 font-bold mt-2 text-lg">{fmt(svc.price)}</p>
                 </button>
               ))}
             </div>

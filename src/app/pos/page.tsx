@@ -380,18 +380,16 @@ export default function POSPage() {
                 <tbody>
                   {receipt.items.map((item, i) => (
                     <tr key={i}>
-                      <td colSpan={3} style={{fontSize:'10px', color:'#000'}}>{item.serviceName}</td>
-                    </tr>
-                  ))}
-                  {receipt.items.map((item, i) => (
-                    <tr key={'d'+i}>
-                      <td style={{fontSize:'10px',paddingLeft:'8px', color:'#000'}}>
-                        {item.qty} x {fmt(item.price)}
-                        {item.discountPercent > 0 && (
-                          <span style={{color:'#dc2626'}}> (disc {item.discountPercent}%)</span>
-                        )}
+                      <td style={{fontSize:'10px', color:'#000', paddingBottom:'2px'}} colSpan={2}>
+                        <div>{item.serviceName}</div>
+                        <div style={{paddingLeft:'8px'}}>
+                          {item.qty} x {fmt(item.price)}
+                          {item.discountPercent > 0 && (
+                            <span style={{color:'#dc2626'}}> (disc {item.discountPercent}%)</span>
+                          )}
+                          <span style={{float:'right'}}>{fmt(item.subtotal)}</span>
+                        </div>
                       </td>
-                      <td className="right" style={{fontSize:'10px', color:'#000'}}>{fmt(item.subtotal)}</td>
                     </tr>
                   ))}
                   {receipt.items.some(i => i.discountPercent > 0) && (

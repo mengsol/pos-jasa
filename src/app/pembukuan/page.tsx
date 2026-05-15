@@ -12,7 +12,8 @@ interface Transaction {
 
 export default function PembukuanPage() {
   const [transactions, setTransactions] = useState<Transaction[]>([])
-  const [tab, setTab] = useState<'all' | 'cash' | 'cashless' | 'cancelled'>('all')
+  const [tab, setTab] = useState<'all' | 'cash' | 'cashless'>('all')
+  const [filterStatus, setFilterStatus] = useState<'all' | 'completed' | 'cancelled'>('all')
   const [from, setFrom] = useState(new Date().toISOString().slice(0, 10))
   const [to, setTo] = useState(new Date().toISOString().slice(0, 10))
   const [expandedId, setExpandedId] = useState<string | null>(null)
@@ -39,10 +40,14 @@ export default function PembukuanPage() {
   const completedTx = transactions.filter(t => t.status === 'completed')
   const cancelledTx = transactions.filter(t => t.status === 'cancelled')
 
-  const filtered = tab === 'cancelled' ? cancelledTx
-    : tab === 'cash' ? completedTx.filter(t => t.payments.some(p => p.method === 'cash'))
-    : tab === 'cashless' ? completedTx.filter(t => t.payments.every(p => p.method !== 'cash'))
-    : transactions
+  // Filter by status dropdown
+  const statusFiltered = filterStatus === 'all' ? transactions
+    : filterStatus === 'completed' ? completedTx : cancelledTx
+
+  // Then filter by payment method tab
+  const filtered = tab === 'cash' ? statusFiltered.filter(t => t.payments.some(p => p.method === 'cash'))
+    : tab === 'cashless' ? statusFiltered.filter(t => t.payments.every(p => p.method !== 'cash'))
+    : statusFiltered
 
   const totalCompleted = completedTx.reduce((s, t) => s + t.totalAmount, 0)
   const totalCancelled = cancelledTx.reduce((s, t) => s + t.totalAmount, 0)

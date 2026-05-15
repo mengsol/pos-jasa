@@ -32,7 +32,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[url('/bg.jpeg')] bg-cover bg-center bg-fixed bg-gray-900 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-[url('/bg.jpeg')] bg-contain bg-center bg-fixed bg-no-repeat bg-gray-900 px-4">
       <div className="w-full max-w-md">
         {/* Logo area */}
         <div className="text-center mb-8">

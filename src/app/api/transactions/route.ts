@@ -55,7 +55,50 @@ export async function POST(req: NextRequest) {
   })
   const invoiceNo = `INV-${today}-${String(count + 1).padStart(4, '0')}`
 
-  const totalAmount = items.reduce((sum: number, i: { subtotal: number }) => sum + i.subtotal, 0)
+  // Server-side recalculate: fetch active discounts and re-apply
+  const now = new Date()
+  const activeDiscounts = await prisma.discount.findMany({
+    where: { active: true, dateFrom: { lte: now }, dateTo: { gte: now } },
+  })
+
+  // Get service details for category lookup
+  const serviceIds = items.map((i: { serviceId: string }) => i.serviceId)
+  const services = await prisma.service.findMany({
+    where: { id: { in: serviceIds } },
+    select: { id: true, price: true, categoryId: true },
+  })
+
+  // Recalculate each item with current active discounts
+  const recalculatedItems = items.map((i: { serviceId: string; serviceName: string; qty: number; price: number; originalPrice?: number; discountPercent?: number; subtotal: number }) => {
+    const svc = services.find(s => s.id === i.serviceId)
+    if (!svc) return i
+
+    // Calculate discount: item-level + category-level (stacked)
+    let totalDiscount = 0
+    const itemDisc = activeDiscounts.find(d => d.type === 'service' && d.targetId === svc.id)
+    if (itemDisc) totalDiscount += itemDisc.discountPercent
+    if (svc.categoryId) {
+      const catDisc = activeDiscounts.find(d => d.type === 'category' && d.targetId === svc.categoryId)
+      if (catDisc) totalDiscount += catDisc.discountPercent
+    }
+    totalDiscount = Math.min(totalDiscount, 100)
+
+    const originalPrice = svc.price
+    const discountedPrice = totalDiscount > 0 ? Math.round(originalPrice * (1 - totalDiscount / 100)) : originalPrice
+    const subtotal = discountedPrice * i.qty
+
+    return {
+      serviceId: i.serviceId,
+      serviceName: i.serviceName,
+      qty: i.qty,
+      price: discountedPrice,
+      originalPrice,
+      discountPercent: totalDiscount,
+      subtotal,
+    }
+  })
+
+  const totalAmount = recalculatedItems.reduce((sum: number, i: { subtotal: number }) => sum + i.subtotal, 0)
 
   const transaction = await prisma.transaction.create({
     data: {
@@ -65,7 +108,7 @@ export async function POST(req: NextRequest) {
       totalAmount,
       note,
       items: {
-        create: items.map((i: { serviceId: string; serviceName: string; qty: number; price: number; originalPrice?: number; discountPercent?: number; subtotal: number }) => ({
+        create: recalculatedItems.map((i: { serviceId: string; serviceName: string; qty: number; price: number; originalPrice?: number; discountPercent?: number; subtotal: number }) => ({
           serviceId: i.serviceId,
           serviceName: i.serviceName,
           qty: i.qty,

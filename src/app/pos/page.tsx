@@ -63,11 +63,10 @@ export default function POSPage() {
       setDiscountsLoaded(true)
     }).catch(() => setDiscountsLoaded(true))
 
-    // Show cached services immediately while fetching fresh data
-    // But only after discounts are also loaded (handled by discountsLoaded state)
-    const cached = sessionStorage.getItem('pos-services')
-    if (cached) {
-      try { setServices(JSON.parse(cached)) } catch {}
+    // Show cached services immediately
+    const cachedServices = sessionStorage.getItem('pos-services')
+    if (cachedServices) {
+      try { setServices(JSON.parse(cachedServices)) } catch {}
     }
   }, [router])
 

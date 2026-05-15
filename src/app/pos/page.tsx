@@ -30,14 +30,30 @@ export default function POSPage() {
   const router = useRouter()
 
   useEffect(() => {
-    fetch('/api/auth/me').then(r => {
+    // Parallel fetch for faster loading
+    const authPromise = fetch('/api/auth/me')
+    const servicesPromise = fetch('/api/services')
+    const settingsPromise = fetch('/api/settings')
+
+    authPromise.then(r => {
       if (!r.ok) { router.push('/login'); return }
       return r.json()
     }).then(d => d && setUser(d))
-    fetch('/api/services').then(r => r.json()).then(setServices)
-    fetch('/api/settings').then(r => r.json()).then(s => {
+
+    servicesPromise.then(r => r.json()).then(data => {
+      setServices(data)
+      sessionStorage.setItem('pos-services', JSON.stringify(data))
+    })
+
+    settingsPromise.then(r => r.json()).then(s => {
       if (s.qris_merchant_id) setQrisUrl(s.qris_merchant_id)
     })
+
+    // Show cached services immediately while fetching fresh data
+    const cached = sessionStorage.getItem('pos-services')
+    if (cached) {
+      try { setServices(JSON.parse(cached)) } catch {}
+    }
   }, [router])
 
   useEffect(() => {

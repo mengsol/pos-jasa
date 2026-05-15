@@ -33,6 +33,7 @@ export default function POSPage() {
   const [showCart, setShowCart] = useState(false)
   const [showMenu, setShowMenu] = useState(false)
   const [discounts, setDiscounts] = useState<Discount[]>([])
+  const [discountsLoaded, setDiscountsLoaded] = useState(false)
   const receiptRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
 
@@ -59,9 +60,11 @@ export default function POSPage() {
 
     discountsPromise.then(r => r.json()).then(data => {
       if (Array.isArray(data)) setDiscounts(data)
-    })
+      setDiscountsLoaded(true)
+    }).catch(() => setDiscountsLoaded(true))
 
     // Show cached services immediately while fetching fresh data
+    // But only after discounts are also loaded (handled by discountsLoaded state)
     const cached = sessionStorage.getItem('pos-services')
     if (cached) {
       try { setServices(JSON.parse(cached)) } catch {}
@@ -217,6 +220,11 @@ export default function POSPage() {
             onChange={e => setSearch(e.target.value)}
             className="w-full px-4 py-2.5 border border-gray-200 rounded-xl mb-3 text-gray-900 bg-white text-sm focus:outline-none focus:border-gray-400 transition" />
           <div className="flex-1 md:bg-[url('/bg.jpeg')] md:bg-contain md:bg-top md:bg-no-repeat rounded-lg p-3">
+            {!discountsLoaded ? (
+              <div className="flex items-center justify-center h-32">
+                <p className="text-gray-400 text-sm">Memuat data...</p>
+              </div>
+            ) : (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
               {filtered.map(svc => (
                 <button key={svc.id} onClick={() => addToCart(svc)}
@@ -237,6 +245,7 @@ export default function POSPage() {
                 </button>
               ))}
             </div>
+            )}
           </div>
         </div>
 

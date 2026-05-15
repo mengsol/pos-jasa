@@ -207,10 +207,11 @@ export default function PembukuanPage() {
                 </>
               ))}
               {filtered.length === 0 && (
-                <tr><td colSpan={6} className="text-center py-8 text-gray-400">Tidak ada transaksi</td></tr>
+                <tr><td colSpan={9} className="text-center py-8 text-gray-400">Tidak ada transaksi</td></tr>
               )}
             </tbody>
           </table>
+          </div>
         </div>
       </div>
     </div>

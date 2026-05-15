@@ -138,18 +138,18 @@ export default function POSPage() {
 
   return (
     <div className="min-h-screen bg-gray-900">
-      <div className="bg-blue-600 text-white px-4 py-3 flex justify-between items-center">
-        <h1 className="text-lg font-bold">Ayunda Beauty Studio</h1>
-        <div className="flex items-center gap-4">
-          <span className="text-sm">{user?.name} ({user?.role})</span>
+      <div className="bg-gray-800 text-white px-4 py-3 flex justify-between items-center">
+        <h1 className="text-lg font-bold tracking-wide">Ayunda Beauty Studio</h1>
+        <div className="flex items-center gap-3">
+          <span className="text-sm text-gray-300">{user?.name} ({user?.role})</span>
           {user?.role === 'admin' && (
             <>
-              <button onClick={() => router.push('/admin')} className="text-sm bg-blue-500 px-3 py-1 rounded hover:bg-blue-400">Admin</button>
-              <button onClick={() => router.push('/users')} className="text-sm bg-purple-500 px-3 py-1 rounded hover:bg-purple-400">Users</button>
+              <button onClick={() => router.push('/admin')} className="text-sm bg-gray-600 px-3 py-1 rounded hover:bg-gray-500">Admin</button>
+              <button onClick={() => router.push('/users')} className="text-sm bg-gray-600 px-3 py-1 rounded hover:bg-gray-500">Users</button>
             </>
           )}
-          <button onClick={() => router.push('/pembukuan')} className="text-sm bg-green-500 px-3 py-1 rounded hover:bg-green-400">Pembukuan</button>
-          <button onClick={handleLogout} className="text-sm bg-red-500 px-3 py-1 rounded hover:bg-red-400">Logout</button>
+          <button onClick={() => router.push('/pembukuan')} className="text-sm bg-gray-600 px-3 py-1 rounded hover:bg-gray-500">Pembukuan</button>
+          <button onClick={handleLogout} className="text-sm bg-red-600/80 px-3 py-1 rounded hover:bg-red-500">Logout</button>
         </div>
       </div>
 
@@ -165,8 +165,8 @@ export default function POSPage() {
                 <button key={svc.id} onClick={() => addToCart(svc)}
                   className="bg-white/75 backdrop-blur-sm p-4 rounded-lg shadow hover:shadow-md hover:bg-white/90 transition text-left">
                   <p className="font-bold text-gray-900">{svc.name}</p>
-                  <p className="text-sm font-semibold text-gray-700">{svc.category?.name}</p>
-                  <p className="text-blue-600 font-bold mt-1">{fmt(svc.price)}</p>
+                  <p className="text-sm text-gray-500">{svc.category?.name}</p>
+                  <p className="text-gray-800 font-bold mt-1">{fmt(svc.price)}</p>
                 </button>
               ))}
             </div>

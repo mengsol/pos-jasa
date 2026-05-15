@@ -1,0 +1,105 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  username  String   @unique
+  password  String
+  name      String
+  role      String   @default("kasir") // admin | kasir
+  outletId  String?
+  outlet    Outlet?  @relation(fields: [outletId], references: [id])
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  transactions Transaction[]
+}
+
+model Outlet {
+  id        String   @id @default(cuid())
+  name      String
+  address   String?
+  phone     String?
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  users        User[]
+  services     Service[]
+  transactions Transaction[]
+}
+
+model Category {
+  id        String   @id @default(cuid())
+  name      String
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  services Service[]
+}
+
+model Service {
+  id         String   @id @default(cuid())
+  name       String
+  price      Float
+  categoryId String?
+  category   Category? @relation(fields: [categoryId], references: [id])
+  outletId   String?
+  outlet     Outlet?   @relation(fields: [outletId], references: [id])
+  active     Boolean   @default(true)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  transactionItems TransactionItem[]
+}
+
+model Transaction {
+  id          String   @id @default(cuid())
+  invoiceNo   String   @unique
+  outletId    String
+  outlet      Outlet   @relation(fields: [outletId], references: [id])
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  totalAmount Float
+  status      String   @default("completed") // completed | cancelled
+  note        String?
+  createdAt   DateTime @default(now())
+
+  items    TransactionItem[]
+  payments Payment[]
+}
+
+model TransactionItem {
+  id            String      @id @default(cuid())
+  transactionId String
+  transaction   Transaction @relation(fields: [transactionId], references: [id], onDelete: Cascade)
+  serviceId     String
+  service       Service     @relation(fields: [serviceId], references: [id])
+  serviceName   String
+  qty           Int         @default(1)
+  price         Float
+  subtotal      Float
+}
+
+model Payment {
+  id            String      @id @default(cuid())
+  transactionId String
+  transaction   Transaction @relation(fields: [transactionId], references: [id], onDelete: Cascade)
+  method        String      // cash | transfer | qris
+  amount        Float
+  createdAt     DateTime    @default(now())
+}
+
+model Setting {
+  id    String @id @default(cuid())
+  key   String @unique
+  value String
+}

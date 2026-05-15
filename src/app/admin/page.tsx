@@ -12,6 +12,8 @@ export default function AdminPage() {
   const [price, setPrice] = useState('')
   const [catId, setCatId] = useState('')
   const [newCat, setNewCat] = useState('')
+  const [editCatId, setEditCatId] = useState<string | null>(null)
+  const [editCatName, setEditCatName] = useState('')
   const [editId, setEditId] = useState<string | null>(null)
   const [user, setUser] = useState<{ role: string } | null>(null)
   const [qrisMerchant, setQrisMerchant] = useState('')
@@ -66,6 +68,20 @@ export default function AdminPage() {
     loadData()
   }
 
+  async function handleEditCategory(e: React.FormEvent) {
+    e.preventDefault()
+    if (!editCatId || !editCatName) return
+    await fetch(`/api/categories/${editCatId}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: editCatName }) })
+    setEditCatId(null); setEditCatName('')
+    loadData()
+  }
+
+  async function handleDeleteCategory(id: string) {
+    if (!confirm('Hapus kategori ini?')) return
+    await fetch(`/api/categories/${id}`, { method: 'DELETE' })
+    loadData()
+  }
+
   async function handleSaveQris(e: React.FormEvent) {
     e.preventDefault()
     await fetch('/api/settings', {
@@ -115,15 +131,35 @@ export default function AdminPage() {
 
         {/* Form Kategori */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
-          <h2 className="font-bold text-gray-800 mb-4 text-sm uppercase tracking-wider">Tambah Kategori</h2>
-          <form onSubmit={handleAddCategory} className="flex flex-col md:flex-row gap-2">
-            <input type="text" placeholder="Nama Kategori" value={newCat} onChange={e => setNewCat(e.target.value)}
-              className="flex-1 px-4 py-2.5 border border-gray-200 rounded-xl text-gray-900 text-sm focus:outline-none focus:border-gray-400 transition" required />
-            <button type="submit" className="bg-gray-800 text-white px-4 py-2.5 rounded-xl text-sm font-medium hover:bg-gray-700 transition">Tambah</button>
-          </form>
+          <h2 className="font-bold text-gray-800 mb-4 text-sm uppercase tracking-wider">
+            {editCatId ? 'Edit Kategori' : 'Tambah Kategori'}
+          </h2>
+          {editCatId ? (
+            <form onSubmit={handleEditCategory} className="flex flex-col md:flex-row gap-2">
+              <input type="text" placeholder="Nama Kategori" value={editCatName} onChange={e => setEditCatName(e.target.value)}
+                className="flex-1 px-4 py-2.5 border border-gray-200 rounded-xl text-gray-900 text-sm focus:outline-none focus:border-gray-400 transition" required />
+              <button type="submit" className="bg-gray-800 text-white px-4 py-2.5 rounded-xl text-sm font-medium hover:bg-gray-700 transition">Update</button>
+              <button type="button" onClick={() => { setEditCatId(null); setEditCatName('') }}
+                className="bg-gray-100 text-gray-600 px-4 py-2.5 rounded-xl text-sm font-medium hover:bg-gray-200 transition">Batal</button>
+            </form>
+          ) : (
+            <form onSubmit={handleAddCategory} className="flex flex-col md:flex-row gap-2">
+              <input type="text" placeholder="Nama Kategori" value={newCat} onChange={e => setNewCat(e.target.value)}
+                className="flex-1 px-4 py-2.5 border border-gray-200 rounded-xl text-gray-900 text-sm focus:outline-none focus:border-gray-400 transition" required />
+              <button type="submit" className="bg-gray-800 text-white px-4 py-2.5 rounded-xl text-sm font-medium hover:bg-gray-700 transition">Tambah</button>
+            </form>
+          )}
           <div className="mt-4 space-y-1.5">
             {categories.map(c => (
-              <div key={c.id} className="text-sm text-gray-700 bg-gray-50 px-3 py-2 rounded-lg">{c.name}</div>
+              <div key={c.id} className="flex items-center justify-between text-sm text-gray-700 bg-gray-50 px-3 py-2 rounded-lg">
+                <span>{c.name}</span>
+                <div className="flex gap-1.5">
+                  <button onClick={() => { setEditCatId(c.id); setEditCatName(c.name) }}
+                    className="text-xs bg-gray-200 text-gray-700 px-2 py-1 rounded-lg hover:bg-gray-300 transition">Edit</button>
+                  <button onClick={() => handleDeleteCategory(c.id)}
+                    className="text-xs bg-red-50 text-red-600 px-2 py-1 rounded-lg hover:bg-red-100 transition">Hapus</button>
+                </div>
+              </div>
             ))}
           </div>
         </div>

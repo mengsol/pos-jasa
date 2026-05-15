@@ -42,8 +42,13 @@ export default function TransaksiPage() {
   }
 
   async function handleCancel() {
-    if (!cancelTarget || !adminUser || !adminPass || !cancelReason) {
-      setCancelError('Semua field harus diisi')
+    if (!cancelTarget || !cancelReason) {
+      setCancelError('Alasan cancel harus diisi')
+      return
+    }
+    // Only require admin credentials if user is kasir
+    if (user?.role !== 'admin' && (!adminUser || !adminPass)) {
+      setCancelError('Username dan password admin harus diisi')
       return
     }
     setCancelLoading(true)

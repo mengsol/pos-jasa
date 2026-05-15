@@ -80,15 +80,16 @@ export default function POSPage() {
   )
 
   function getDiscountForService(svc: Service): number {
-    // Check item-level discount first
+    let totalDiscount = 0
+    // Check item-level discount
     const itemDiscount = discounts.find(d => d.type === 'service' && d.targetId === svc.id)
-    if (itemDiscount) return itemDiscount.discountPercent
-    // Check category-level discount
+    if (itemDiscount) totalDiscount += itemDiscount.discountPercent
+    // Check category-level discount (stacks with item)
     if (svc.categoryId) {
       const catDiscount = discounts.find(d => d.type === 'category' && d.targetId === svc.categoryId)
-      if (catDiscount) return catDiscount.discountPercent
+      if (catDiscount) totalDiscount += catDiscount.discountPercent
     }
-    return 0
+    return Math.min(totalDiscount, 100) // cap at 100%
   }
 
   function addToCart(svc: Service) {

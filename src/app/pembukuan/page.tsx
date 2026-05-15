@@ -51,8 +51,8 @@ export default function PembukuanPage() {
 
   const totalCompleted = completedTx.reduce((s, t) => s + t.totalAmount, 0)
   const totalCancelled = cancelledTx.reduce((s, t) => s + t.totalAmount, 0)
-  const totalCash = completedTx.reduce((s, t) => s + t.payments.filter(p => p.method === 'cash').reduce((a, p) => a + p.amount, 0), 0)
-  const totalCashless = completedTx.reduce((s, t) => s + t.payments.filter(p => p.method !== 'cash').reduce((a, p) => a + p.amount, 0), 0)
+  const totalCash = completedTx.filter(t => t.payments.some(p => p.method === 'cash')).reduce((s, t) => s + t.totalAmount, 0)
+  const totalCashless = completedTx.filter(t => t.payments.every(p => p.method !== 'cash')).reduce((s, t) => s + t.totalAmount, 0)
 
   return (
     <div className="min-h-screen bg-gray-50">

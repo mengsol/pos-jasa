@@ -391,7 +391,7 @@ export default function POSPage() {
                       <td style={{fontSize:'10px', color:'#000', paddingBottom:'2px'}} colSpan={2}>
                         <div>{item.serviceName}</div>
                         <div style={{paddingLeft:'8px'}}>
-                          {item.qty} x {fmt(item.price)}
+                          {item.qty} x {fmt(item.originalPrice)}
                           {item.discountPercent > 0 && (
                             <span style={{color:'#dc2626'}}> (disc {item.discountPercent}%)</span>
                           )}

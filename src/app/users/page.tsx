@@ -176,74 +176,74 @@ export default function UsersPage() {
         </div>
       </div>
 
-      <div className="p-6 grid md:grid-cols-3 gap-6">
+      <div className="p-4 md:p-6 grid md:grid-cols-3 gap-4">
         {/* Form */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
-          <h2 className="font-bold text-gray-800 mb-3">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+          <h2 className="font-bold text-gray-800 mb-3 text-sm uppercase tracking-wider">
             {editId ? 'Edit User' : 'Add User'}
           </h2>
           {error && (
-            <div className="mb-3 p-2 text-sm bg-red-100 text-red-700 rounded">
+            <div className="mb-3 p-2.5 text-sm bg-red-50 text-red-600 rounded-xl border border-red-100">
               {error}
             </div>
           )}
           <form onSubmit={handleSubmit} className="space-y-3">
             <div>
-              <label className="block text-sm text-gray-700 mb-1">Username</label>
+              <label className="block text-xs text-gray-500 mb-1 uppercase tracking-wider">Username</label>
               <input
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 required
-                className="w-full px-3 py-2 border rounded-md text-gray-900"
+                className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-gray-900 text-sm focus:outline-none focus:border-gray-400 transition"
               />
             </div>
             <div>
-              <label className="block text-sm text-gray-700 mb-1">
-                Password {editId && '(kosongkan kalau tidak diubah)'}
+              <label className="block text-xs text-gray-500 mb-1 uppercase tracking-wider">
+                Password {editId && '(kosongkan jika tidak diubah)'}
               </label>
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required={!editId}
-                className="w-full px-3 py-2 border rounded-md text-gray-900"
+                className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-gray-900 text-sm focus:outline-none focus:border-gray-400 transition"
               />
             </div>
             <div>
-              <label className="block text-sm text-gray-700 mb-1">Nama Lengkap</label>
+              <label className="block text-xs text-gray-500 mb-1 uppercase tracking-wider">Nama Lengkap</label>
               <input
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 required
-                className="w-full px-3 py-2 border rounded-md text-gray-900"
+                className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-gray-900 text-sm focus:outline-none focus:border-gray-400 transition"
               />
             </div>
             <div>
-              <label className="block text-sm text-gray-700 mb-1">Role</label>
+              <label className="block text-xs text-gray-500 mb-1 uppercase tracking-wider">Role</label>
               <select
                 value={role}
                 onChange={(e) => setRole(e.target.value)}
                 disabled={editId === session?.id}
-                className="w-full px-3 py-2 border rounded-md text-gray-900 disabled:bg-gray-100"
+                className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-gray-900 text-sm focus:outline-none focus:border-gray-400 transition disabled:bg-gray-50"
               >
                 <option value="kasir">Kasir</option>
                 <option value="admin">Admin</option>
               </select>
               {editId === session?.id && (
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-gray-400 mt-1">
                   Tidak bisa ubah role akun sendiri
                 </p>
               )}
             </div>
             {outlets.length > 0 && (
               <div>
-                <label className="block text-sm text-gray-700 mb-1">Outlet</label>
+                <label className="block text-xs text-gray-500 mb-1 uppercase tracking-wider">Outlet</label>
                 <select
                   value={outletId}
                   onChange={(e) => setOutletId(e.target.value)}
-                  className="w-full px-3 py-2 border rounded-md text-gray-900"
+                  className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-gray-900 text-sm focus:outline-none focus:border-gray-400 transition"
                 >
                   <option value="">— Tidak ada —</option>
                   {outlets.map((o) => (
@@ -257,7 +257,7 @@ export default function UsersPage() {
             <div className="flex gap-2 pt-2">
               <button
                 type="submit"
-                className="flex-1 bg-blue-600 text-white py-2 rounded-md font-medium hover:bg-blue-700"
+                className="flex-1 bg-gray-800 text-white py-2.5 rounded-xl text-sm font-medium hover:bg-gray-700 transition"
               >
                 {editId ? 'Update' : 'Add'}
               </button>
@@ -265,7 +265,7 @@ export default function UsersPage() {
                 <button
                   type="button"
                   onClick={resetForm}
-                  className="flex-1 bg-gray-500 text-white py-2 rounded-md font-medium hover:bg-gray-600"
+                  className="flex-1 bg-gray-100 text-gray-600 py-2.5 rounded-xl text-sm font-medium hover:bg-gray-200 transition"
                 >
                   Cancel
                 </button>
@@ -275,69 +275,72 @@ export default function UsersPage() {
         </div>
 
         {/* List */}
-        <div className="md:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
-          <h2 className="font-bold text-gray-800 mb-3">Daftar User</h2>
-          <div className="overflow-x-auto">
+        <div className="md:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+          <h2 className="font-bold text-gray-800 mb-3 text-sm uppercase tracking-wider">Daftar User</h2>
+          
+          {/* Mobile: card view */}
+          <div className="md:hidden space-y-2">
+            {users.map((u) => (
+              <div key={u.id} className="flex items-center justify-between bg-gray-50 p-3 rounded-xl">
+                <div>
+                  <p className="text-sm font-medium text-gray-800">
+                    {u.username}
+                    {u.id === session?.id && <span className="ml-1 text-xs text-gray-400">(you)</span>}
+                  </p>
+                  <p className="text-xs text-gray-500">{u.name} · <span className={u.role === 'admin' ? 'text-purple-600' : 'text-gray-500'}>{u.role}</span></p>
+                </div>
+                <div className="flex gap-1.5">
+                  <button onClick={() => handleEdit(u)} className="text-xs bg-gray-200 text-gray-700 px-2.5 py-1.5 rounded-lg hover:bg-gray-300 transition">Edit</button>
+                  <button onClick={() => handleDelete(u)} disabled={u.id === session?.id}
+                    className="text-xs bg-red-50 text-red-600 px-2.5 py-1.5 rounded-lg hover:bg-red-100 transition disabled:opacity-40">Del</button>
+                </div>
+              </div>
+            ))}
+            {users.length === 0 && <p className="text-center text-gray-400 py-4 text-sm">Belum ada user</p>}
+          </div>
+
+          {/* Desktop: table view */}
+          <div className="hidden md:block overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b text-left text-gray-700">
-                  <th className="py-2 px-2">Username</th>
-                  <th className="py-2 px-2">Nama</th>
-                  <th className="py-2 px-2">Role</th>
-                  <th className="py-2 px-2">Created</th>
-                  <th className="py-2 px-2 text-right">Action</th>
+                <tr className="border-b text-left text-gray-500 text-xs uppercase tracking-wider">
+                  <th className="py-2 px-2 pb-3">Username</th>
+                  <th className="py-2 px-2 pb-3">Nama</th>
+                  <th className="py-2 px-2 pb-3">Role</th>
+                  <th className="py-2 px-2 pb-3">Created</th>
+                  <th className="py-2 px-2 pb-3 text-right">Action</th>
                 </tr>
               </thead>
               <tbody>
                 {users.map((u) => (
-                  <tr key={u.id} className="border-b hover:bg-gray-50">
-                    <td className="py-2 px-2 font-medium text-gray-800">
+                  <tr key={u.id} className="border-b border-gray-100 hover:bg-gray-50 transition">
+                    <td className="py-3 px-2 font-medium text-gray-800">
                       {u.username}
                       {u.id === session?.id && (
-                        <span className="ml-2 text-xs text-blue-600">(you)</span>
+                        <span className="ml-2 text-xs text-gray-400">(you)</span>
                       )}
                     </td>
-                    <td className="py-2 px-2 text-gray-700">{u.name}</td>
-                    <td className="py-2 px-2">
-                      <span
-                        className={
-                          u.role === 'admin'
-                            ? 'inline-block px-2 py-0.5 text-xs rounded bg-purple-100 text-purple-700 font-medium'
-                            : 'inline-block px-2 py-0.5 text-xs rounded bg-gray-100 text-gray-700 font-medium'
-                        }
-                      >
+                    <td className="py-3 px-2 text-gray-700">{u.name}</td>
+                    <td className="py-3 px-2">
+                      <span className={`inline-block px-2.5 py-0.5 text-xs rounded-full font-medium ${
+                        u.role === 'admin' ? 'bg-purple-50 text-purple-700' : 'bg-gray-100 text-gray-600'
+                      }`}>
                         {u.role}
                       </span>
                     </td>
-                    <td className="py-2 px-2 text-gray-500 text-xs">
+                    <td className="py-3 px-2 text-gray-400 text-xs">
                       {new Date(u.createdAt).toLocaleDateString('id-ID')}
                     </td>
-                    <td className="py-2 px-2 text-right space-x-1">
-                      <button
-                        onClick={() => handleEdit(u)}
-                        className="text-xs bg-yellow-500 text-white px-2 py-1 rounded hover:bg-yellow-600"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => handleDelete(u)}
-                        disabled={u.id === session?.id}
-                        className="text-xs bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 disabled:opacity-40 disabled:cursor-not-allowed"
-                      >
-                        Delete
-                      </button>
+                    <td className="py-3 px-2 text-right space-x-1.5">
+                      <button onClick={() => handleEdit(u)}
+                        className="text-xs bg-gray-100 text-gray-700 px-2.5 py-1.5 rounded-lg hover:bg-gray-200 transition">Edit</button>
+                      <button onClick={() => handleDelete(u)} disabled={u.id === session?.id}
+                        className="text-xs bg-red-50 text-red-600 px-2.5 py-1.5 rounded-lg hover:bg-red-100 transition disabled:opacity-40 disabled:cursor-not-allowed">Delete</button>
                     </td>
                   </tr>
                 ))}
                 {users.length === 0 && (
-                  <tr>
-                    <td
-                      colSpan={5}
-                      className="py-4 px-2 text-center text-gray-500"
-                    >
-                      Belum ada user
-                    </td>
-                  </tr>
+                  <tr><td colSpan={5} className="py-8 px-2 text-center text-gray-400">Belum ada user</td></tr>
                 )}
               </tbody>
             </table>

@@ -32,17 +32,17 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[url('/bg.jpeg')] bg-contain bg-center bg-fixed bg-no-repeat bg-gray-900 px-4">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen min-h-dvh flex items-center justify-center bg-[url('/bg.jpeg')] bg-contain bg-center bg-fixed bg-no-repeat bg-gray-900 px-4 py-8">
+      <div className="w-full max-w-sm md:max-w-md">
         {/* Logo area */}
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-light tracking-[0.3em] text-white/90 uppercase">Ayunda</h1>
-          <p className="text-sm tracking-[0.2em] text-white/60 mt-1">Beauty Studio</p>
+        <div className="text-center mb-6 md:mb-8">
+          <h1 className="text-2xl md:text-3xl font-light tracking-[0.3em] text-white/90 uppercase">Ayunda</h1>
+          <p className="text-xs md:text-sm tracking-[0.2em] text-white/60 mt-1">Beauty Studio</p>
         </div>
 
         {/* Login card */}
-        <div className="bg-white/10 backdrop-blur-xl p-8 rounded-3xl shadow-2xl border border-white/20">
-          <h2 className="text-lg font-medium text-white/90 text-center mb-6">Selamat Datang</h2>
+        <div className="bg-white/10 backdrop-blur-xl p-6 md:p-8 rounded-3xl shadow-2xl border border-white/20">
+          <h2 className="text-base md:text-lg font-medium text-white/90 text-center mb-5 md:mb-6">Selamat Datang</h2>
           
           <form onSubmit={handleLogin} className="space-y-5">
             <div>

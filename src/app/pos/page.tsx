@@ -26,6 +26,7 @@ export default function POSPage() {
   const [showPay, setShowPay] = useState(false)
   const [qrisUrl, setQrisUrl] = useState('')
   const [qrisDataUrl, setQrisDataUrl] = useState('')
+  const [showCart, setShowCart] = useState(false)
   const receiptRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
 
@@ -155,9 +156,9 @@ export default function POSPage() {
   return (
     <div className="min-h-screen bg-gray-900">
       <div className="bg-gray-800 text-white px-4 py-3 flex justify-between items-center">
-        <h1 className="text-lg font-bold tracking-wide">Ayunda Beauty Studio</h1>
-        <div className="flex items-center gap-3">
-          <span className="text-sm text-gray-300">{user?.name} ({user?.role})</span>
+        <h1 className="text-base md:text-lg font-bold tracking-wide">Ayunda Beauty Studio</h1>
+        <div className="flex items-center gap-2 md:gap-3">
+          <span className="hidden md:inline text-sm text-gray-300">{user?.name} ({user?.role})</span>
           <div className="relative group">
             <button className="text-sm bg-gray-700 px-3 py-1.5 rounded-lg hover:bg-gray-600 transition">☰ Menu</button>
             <div className="absolute right-0 top-full mt-1 bg-gray-800 border border-gray-700 rounded-xl shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 min-w-[140px] py-1 z-50">
@@ -178,26 +179,26 @@ export default function POSPage() {
 
       <div className="flex h-[calc(100vh-52px)]">
         {/* Left: Service list */}
-        <div className="flex-1 p-4 overflow-y-auto flex flex-col">
+        <div className="flex-1 p-3 md:p-4 overflow-y-auto flex flex-col">
           <input type="text" placeholder="Cari jasa..." value={search}
             onChange={e => setSearch(e.target.value)}
-            className="w-full px-3 py-2 border rounded-md mb-4 text-gray-900 bg-white" />
+            className="w-full px-4 py-2.5 border border-gray-200 rounded-xl mb-3 text-gray-900 bg-white text-sm focus:outline-none focus:border-gray-400 transition" />
           <div className="flex-1 bg-[url('/bg.jpeg')] bg-contain bg-top bg-no-repeat rounded-lg p-3">
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
               {filtered.map(svc => (
                 <button key={svc.id} onClick={() => addToCart(svc)}
-                  className="bg-white/75 backdrop-blur-sm p-5 rounded-2xl shadow-md hover:shadow-lg hover:bg-white/90 transition-all duration-200 text-left border border-white/50">
-                  <p className="font-bold text-gray-900 text-base">{svc.name}</p>
-                  <p className="text-sm text-gray-500 mt-0.5">{svc.category?.name}</p>
-                  <p className="text-gray-800 font-bold mt-2 text-lg">{fmt(svc.price)}</p>
+                  className="bg-white/75 backdrop-blur-sm p-4 md:p-5 rounded-2xl shadow-md hover:shadow-lg hover:bg-white/90 transition-all duration-200 text-left border border-white/50">
+                  <p className="font-bold text-gray-900 text-sm md:text-base">{svc.name}</p>
+                  <p className="text-xs md:text-sm text-gray-500 mt-0.5">{svc.category?.name}</p>
+                  <p className="text-gray-800 font-bold mt-1 md:mt-2 text-base md:text-lg">{fmt(svc.price)}</p>
                 </button>
               ))}
             </div>
           </div>
         </div>
 
-        {/* Right: Cart */}
-        <div className="w-96 bg-gradient-to-b from-gray-50 to-white border-l flex flex-col">
+        {/* Right: Cart - desktop only */}
+        <div className="hidden md:flex w-96 bg-gradient-to-b from-gray-50 to-white border-l flex-col">
           <div className="p-4 border-b bg-white">
             <h2 className="font-bold text-gray-800 text-lg flex items-center gap-2">🛒 Keranjang</h2>
           </div>
@@ -262,6 +263,59 @@ export default function POSPage() {
           </div>
         </div>
       </div>
+
+      {/* Mobile: Floating cart button */}
+      <button
+        onClick={() => setShowCart(true)}
+        className="md:hidden fixed bottom-4 right-4 z-40 bg-gray-800 text-white rounded-full w-14 h-14 flex items-center justify-center shadow-lg active:scale-95 transition"
+      >
+        <span className="text-xl">🛒</span>
+        {cart.length > 0 && (
+          <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+            {cart.reduce((s, i) => s + i.qty, 0)}
+          </span>
+        )}
+      </button>
+
+      {/* Mobile: Cart slide-up panel */}
+      {showCart && (
+        <div className="md:hidden fixed inset-0 z-50">
+          <div className="absolute inset-0 bg-black/40" onClick={() => setShowCart(false)} />
+          <div className="absolute bottom-0 left-0 right-0 bg-white rounded-t-3xl max-h-[80dvh] flex flex-col shadow-2xl">
+            <div className="flex justify-center pt-2 pb-1">
+              <button onClick={() => setShowCart(false)} className="w-12 h-1.5 bg-gray-300 rounded-full" />
+            </div>
+            <div className="p-4 border-b bg-white">
+              <h2 className="font-bold text-gray-800 text-lg">🛒 Keranjang</h2>
+            </div>
+            <div className="flex-1 overflow-y-auto p-4 space-y-2">
+              {cart.length === 0 && <p className="text-gray-400 text-center mt-8 text-sm">Belum ada item</p>}
+              {cart.map(item => (
+                <div key={item.serviceId} className="flex items-center justify-between bg-gray-50 p-3 rounded-xl">
+                  <div className="flex-1">
+                    <p className="text-sm font-semibold text-gray-800">{item.serviceName}</p>
+                    <p className="text-xs text-gray-400">{fmt(item.price)} / item</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button onClick={() => updateQty(item.serviceId, item.qty - 1)} className="w-7 h-7 bg-gray-200 rounded-full text-gray-600 font-bold">-</button>
+                    <span className="text-sm w-5 text-center font-semibold">{item.qty}</span>
+                    <button onClick={() => updateQty(item.serviceId, item.qty + 1)} className="w-7 h-7 bg-gray-800 rounded-full text-white font-bold">+</button>
+                    <span className="text-sm font-bold w-16 text-right">{fmt(item.subtotal)}</span>
+                    <button onClick={() => removeFromCart(item.serviceId)} className="text-red-400 text-sm ml-1">✕</button>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="p-4 border-t space-y-3">
+              <div className="flex justify-between text-lg font-bold text-gray-800">
+                <span>Total</span><span>{fmt(total)}</span>
+              </div>
+              <button onClick={() => { setShowCart(false); setShowPay(true) }} disabled={cart.length === 0}
+                className="w-full bg-gray-800 text-white py-3 rounded-xl font-bold disabled:opacity-40 transition">Bayar</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Receipt Modal — Thermal format */}
       {receipt && (

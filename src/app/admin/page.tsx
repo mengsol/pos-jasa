@@ -90,79 +90,99 @@ export default function AdminPage() {
         </div>
       </div>
 
-      <div className="max-w-5xl mx-auto p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="max-w-5xl mx-auto p-4 md:p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Form Jasa */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-          <h2 className="font-bold text-gray-800 mb-4">{editId ? 'Edit Jasa' : 'Tambah Jasa'}</h2>
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+          <h2 className="font-bold text-gray-800 mb-4 text-sm uppercase tracking-wider">{editId ? 'Edit Jasa' : 'Tambah Jasa'}</h2>
           <form onSubmit={handleSaveService} className="space-y-3">
             <input type="text" placeholder="Nama Jasa" value={name} onChange={e => setName(e.target.value)}
-              className="w-full px-3 py-2 border rounded text-gray-900" required />
+              className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-gray-900 text-sm focus:outline-none focus:border-gray-400 transition" required />
             <input type="number" placeholder="Harga" value={price} onChange={e => setPrice(e.target.value)}
-              className="w-full px-3 py-2 border rounded text-gray-900" required />
-            <select value={catId} onChange={e => setCatId(e.target.value)} className="w-full px-3 py-2 border rounded text-gray-900">
+              className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-gray-900 text-sm focus:outline-none focus:border-gray-400 transition" required />
+            <select value={catId} onChange={e => setCatId(e.target.value)} className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-gray-900 text-sm focus:outline-none focus:border-gray-400 transition">
               <option value="">-- Pilih Kategori --</option>
               {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
             <div className="flex gap-2">
-              <button type="submit" className="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
+              <button type="submit" className="flex-1 bg-gray-800 text-white py-2.5 rounded-xl text-sm font-medium hover:bg-gray-700 transition">
                 {editId ? 'Update' : 'Simpan'}
               </button>
               {editId && <button type="button" onClick={() => { setEditId(null); setName(''); setPrice(''); setCatId('') }}
-                className="bg-gray-300 px-4 py-2 rounded text-gray-700">Batal</button>}
+                className="bg-gray-100 px-4 py-2.5 rounded-xl text-gray-600 text-sm font-medium hover:bg-gray-200 transition">Batal</button>}
             </div>
           </form>
         </div>
 
         {/* Form Kategori */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-          <h2 className="font-bold text-gray-800 mb-4">Tambah Kategori</h2>
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+          <h2 className="font-bold text-gray-800 mb-4 text-sm uppercase tracking-wider">Tambah Kategori</h2>
           <form onSubmit={handleAddCategory} className="flex gap-2">
             <input type="text" placeholder="Nama Kategori" value={newCat} onChange={e => setNewCat(e.target.value)}
-              className="flex-1 px-3 py-2 border rounded text-gray-900" required />
-            <button type="submit" className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Tambah</button>
+              className="flex-1 px-4 py-2.5 border border-gray-200 rounded-xl text-gray-900 text-sm focus:outline-none focus:border-gray-400 transition" required />
+            <button type="submit" className="bg-gray-800 text-white px-4 py-2.5 rounded-xl text-sm font-medium hover:bg-gray-700 transition">Tambah</button>
           </form>
-          <div className="mt-4 space-y-1">
+          <div className="mt-4 space-y-1.5">
             {categories.map(c => (
-              <div key={c.id} className="text-sm text-gray-700 bg-gray-50 px-3 py-1 rounded">{c.name}</div>
+              <div key={c.id} className="text-sm text-gray-700 bg-gray-50 px-3 py-2 rounded-lg">{c.name}</div>
             ))}
           </div>
         </div>
 
         {/* Daftar Jasa */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:col-span-2">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 md:col-span-2">
           {/* QRIS Settings */}
-          <div className="mb-6 p-4 bg-purple-50 rounded-lg border border-purple-200">
-            <h3 className="font-bold text-purple-800 mb-2">QRIS Settings</h3>
+          <div className="mb-6 p-4 bg-gray-50 rounded-xl border border-gray-200">
+            <h3 className="font-bold text-gray-800 mb-2 text-sm">QRIS Settings</h3>
             <form onSubmit={handleSaveQris} className="flex gap-2">
               <input type="text" placeholder="QRIS Merchant ID / URL" value={qrisMerchant}
                 onChange={e => setQrisMerchant(e.target.value)}
-                className="flex-1 px-3 py-2 border rounded text-gray-900" />
-              <button type="submit" className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700">Simpan</button>
+                className="flex-1 px-4 py-2.5 border border-gray-200 rounded-xl text-gray-900 text-sm focus:outline-none focus:border-gray-400 transition" />
+              <button type="submit" className="bg-gray-800 text-white px-4 py-2.5 rounded-xl text-sm font-medium hover:bg-gray-700 transition">Simpan</button>
             </form>
-            <p className="text-xs text-purple-600 mt-1">Masukkan nomor/URL QRIS merchant. Akan ditampilkan sebagai QR code saat pembayaran QRIS.</p>
+            <p className="text-xs text-gray-500 mt-2">Masukkan nomor/URL QRIS merchant. Akan ditampilkan sebagai QR code saat pembayaran QRIS.</p>
           </div>
 
-          <h2 className="font-bold text-gray-800 mb-4">Daftar Jasa</h2>
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b text-left text-gray-600">
-                <th className="py-2">Nama</th><th>Kategori</th><th className="text-right">Harga</th><th className="text-right">Aksi</th>
-              </tr>
-            </thead>
-            <tbody>
-              {services.map(svc => (
-                <tr key={svc.id} className="border-b hover:bg-gray-50">
-                  <td className="py-2 text-gray-800">{svc.name}</td>
-                  <td className="text-gray-600">{svc.category?.name || '-'}</td>
-                  <td className="text-right text-gray-800">{fmt(svc.price)}</td>
-                  <td className="text-right space-x-2">
-                    <button onClick={() => handleEdit(svc)} className="text-blue-600 hover:underline">Edit</button>
-                    <button onClick={() => handleDelete(svc.id)} className="text-red-600 hover:underline">Hapus</button>
-                  </td>
+          <h2 className="font-bold text-gray-800 mb-3 text-sm uppercase tracking-wider">Daftar Jasa</h2>
+          
+          {/* Mobile: card view */}
+          <div className="md:hidden space-y-2">
+            {services.map(svc => (
+              <div key={svc.id} className="flex items-center justify-between bg-gray-50 p-3 rounded-xl">
+                <div>
+                  <p className="text-sm font-medium text-gray-800">{svc.name}</p>
+                  <p className="text-xs text-gray-500">{svc.category?.name || '-'} · {fmt(svc.price)}</p>
+                </div>
+                <div className="flex gap-2">
+                  <button onClick={() => handleEdit(svc)} className="text-xs bg-gray-200 text-gray-700 px-2.5 py-1.5 rounded-lg hover:bg-gray-300 transition">Edit</button>
+                  <button onClick={() => handleDelete(svc.id)} className="text-xs bg-red-50 text-red-600 px-2.5 py-1.5 rounded-lg hover:bg-red-100 transition">Hapus</button>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Desktop: table view */}
+          <div className="hidden md:block overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b text-left text-gray-500 text-xs uppercase tracking-wider">
+                  <th className="py-2 pb-3">Nama</th><th>Kategori</th><th className="text-right">Harga</th><th className="text-right">Aksi</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {services.map(svc => (
+                  <tr key={svc.id} className="border-b border-gray-100 hover:bg-gray-50 transition">
+                    <td className="py-3 text-gray-800 font-medium">{svc.name}</td>
+                    <td className="text-gray-500">{svc.category?.name || '-'}</td>
+                    <td className="text-right text-gray-800">{fmt(svc.price)}</td>
+                    <td className="text-right space-x-2">
+                      <button onClick={() => handleEdit(svc)} className="text-xs bg-gray-100 text-gray-700 px-2.5 py-1 rounded-lg hover:bg-gray-200 transition">Edit</button>
+                      <button onClick={() => handleDelete(svc.id)} className="text-xs bg-red-50 text-red-600 px-2.5 py-1 rounded-lg hover:bg-red-100 transition">Hapus</button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>

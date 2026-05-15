@@ -62,16 +62,20 @@ model Service {
 }
 
 model Transaction {
-  id          String   @id @default(cuid())
-  invoiceNo   String   @unique
-  outletId    String
-  outlet      Outlet   @relation(fields: [outletId], references: [id])
-  userId      String
-  user        User     @relation(fields: [userId], references: [id])
-  totalAmount Float
-  status      String   @default("completed") // completed | cancelled
-  note        String?
-  createdAt   DateTime @default(now())
+  id            String   @id @default(cuid())
+  invoiceNo     String   @unique
+  outletId      String
+  outlet        Outlet   @relation(fields: [outletId], references: [id])
+  userId        String
+  user          User     @relation(fields: [userId], references: [id])
+  totalAmount   Float
+  status        String   @default("completed") // completed | cancelled
+  note          String?
+  createdAt     DateTime @default(now())
+  cancelUser    String?
+  approvedUser  String?
+  cancelDate    DateTime?
+  cancelReason  String?
 
   items    TransactionItem[]
   payments Payment[]

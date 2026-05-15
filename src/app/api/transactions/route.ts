@@ -11,7 +11,7 @@ export async function GET(req: NextRequest) {
   const to = url.searchParams.get('to')
   const method = url.searchParams.get('method') // cash | cashless | all
 
-  const where: Record<string, unknown> = { status: 'completed' }
+  const where: Record<string, unknown> = {}
   if (user.outletId) where.outletId = user.outletId
   const userId = url.searchParams.get('userId')
   if (userId) where.userId = userId
@@ -28,7 +28,7 @@ export async function GET(req: NextRequest) {
       outlet: { select: { name: true } },
     },
     orderBy: { createdAt: 'desc' },
-    take: 200,
+    take: 500,
   })
 
   // Filter by payment method group if needed

@@ -32,39 +32,63 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[url('/bg.jpeg')] bg-contain bg-center bg-fixed bg-no-repeat bg-gray-900">
-      <div className="bg-white/30 backdrop-blur-md p-8 rounded-lg shadow-2xl w-full max-w-sm border border-white/40">
-        <h1 className="text-2xl font-bold text-center mb-6 text-gray-800">Ayunda Beauty Studio</h1>
-        <form onSubmit={handleLogin} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Username</label>
-            <input
-              type="text"
-              value={username}
-              onChange={e => setUsername(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
-            <input
-              type="password"
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
-              required
-            />
-          </div>
-          {error && <p className="text-red-500 text-sm">{error}</p>}
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 disabled:opacity-50"
-          >
-            {loading ? 'Loading...' : 'Login'}
-          </button>
-        </form>
+    <div className="min-h-screen flex items-center justify-center bg-[url('/bg.jpeg')] bg-cover bg-center bg-fixed bg-gray-900 px-4">
+      <div className="w-full max-w-md">
+        {/* Logo area */}
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-light tracking-[0.3em] text-white/90 uppercase">Ayunda</h1>
+          <p className="text-sm tracking-[0.2em] text-white/60 mt-1">Beauty Studio</p>
+        </div>
+
+        {/* Login card */}
+        <div className="bg-white/10 backdrop-blur-xl p-8 rounded-3xl shadow-2xl border border-white/20">
+          <h2 className="text-lg font-medium text-white/90 text-center mb-6">Selamat Datang</h2>
+          
+          <form onSubmit={handleLogin} className="space-y-5">
+            <div>
+              <label className="block text-xs font-medium text-white/60 mb-2 uppercase tracking-wider">Username</label>
+              <input
+                type="text"
+                value={username}
+                onChange={e => setUsername(e.target.value)}
+                className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/30
+                           focus:outline-none focus:border-white/50 focus:bg-white/15 transition-all duration-200"
+                placeholder="Masukkan username"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-white/60 mb-2 uppercase tracking-wider">Password</label>
+              <input
+                type="password"
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/30
+                           focus:outline-none focus:border-white/50 focus:bg-white/15 transition-all duration-200"
+                placeholder="Masukkan password"
+                required
+              />
+            </div>
+
+            {error && (
+              <div className="bg-red-500/20 border border-red-400/30 rounded-xl px-4 py-2">
+                <p className="text-red-300 text-sm text-center">{error}</p>
+              </div>
+            )}
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-white text-gray-900 py-3 rounded-xl font-semibold
+                         hover:bg-white/90 active:scale-[0.98] disabled:opacity-50
+                         transition-all duration-200 text-sm uppercase tracking-wider mt-2"
+            >
+              {loading ? 'Memproses...' : 'Masuk'}
+            </button>
+          </form>
+        </div>
+
+        <p className="text-center text-white/30 text-xs mt-6">© 2026 Ayunda Beauty Studio</p>
       </div>
     </div>
   )

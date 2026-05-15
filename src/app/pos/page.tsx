@@ -27,6 +27,7 @@ export default function POSPage() {
   const [qrisUrl, setQrisUrl] = useState('')
   const [qrisDataUrl, setQrisDataUrl] = useState('')
   const [showCart, setShowCart] = useState(false)
+  const [showMenu, setShowMenu] = useState(false)
   const receiptRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
 
@@ -159,9 +160,12 @@ export default function POSPage() {
         <h1 className="text-base md:text-lg font-bold tracking-wide">Ayunda Beauty Studio</h1>
         <div className="flex items-center gap-2 md:gap-3">
           <span className="hidden md:inline text-sm text-gray-300">{user?.name} ({user?.role})</span>
-          <div className="relative group">
-            <button className="text-sm bg-gray-700 px-3 py-1.5 rounded-lg hover:bg-gray-600 transition">☰ Menu</button>
-            <div className="absolute right-0 top-full mt-1 bg-gray-800 border border-gray-700 rounded-xl shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 min-w-[140px] py-1 z-50">
+          <div className="relative">
+            <button onClick={() => setShowMenu(!showMenu)} className="text-sm bg-gray-700 px-3 py-1.5 rounded-lg hover:bg-gray-600 transition">☰ Menu</button>
+            {showMenu && (
+              <>
+                <div className="fixed inset-0 z-40" onClick={() => setShowMenu(false)} />
+                <div className="absolute right-0 top-full mt-1 bg-gray-800 border border-gray-700 rounded-xl shadow-xl min-w-[140px] py-1 z-50">
               {user?.role === 'admin' && (
                 <>
                   <button onClick={() => router.push('/admin')} className="w-full text-left text-sm px-4 py-2 hover:bg-gray-700 transition">⚙️ Admin</button>
@@ -172,7 +176,9 @@ export default function POSPage() {
               <button onClick={() => router.push('/transaksi')} className="w-full text-left text-sm px-4 py-2 hover:bg-gray-700 transition">🧾 Transaksi</button>
               <div className="border-t border-gray-700 my-1" />
               <button onClick={handleLogout} className="w-full text-left text-sm px-4 py-2 text-red-400 hover:bg-gray-700 transition">🚪 Logout</button>
-            </div>
+                </div>
+              </>
+            )}
           </div>
         </div>
       </div>
@@ -183,7 +189,7 @@ export default function POSPage() {
           <input type="text" placeholder="Cari jasa..." value={search}
             onChange={e => setSearch(e.target.value)}
             className="w-full px-4 py-2.5 border border-gray-200 rounded-xl mb-3 text-gray-900 bg-white text-sm focus:outline-none focus:border-gray-400 transition" />
-          <div className="flex-1 bg-[url('/bg.jpeg')] bg-contain bg-top bg-no-repeat rounded-lg p-3">
+          <div className="flex-1 md:bg-[url('/bg.jpeg')] md:bg-contain md:bg-top md:bg-no-repeat rounded-lg p-3">
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
               {filtered.map(svc => (
                 <button key={svc.id} onClick={() => addToCart(svc)}

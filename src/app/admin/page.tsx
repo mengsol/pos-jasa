@@ -116,7 +116,7 @@ export default function AdminPage() {
         {/* Form Kategori */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
           <h2 className="font-bold text-gray-800 mb-4 text-sm uppercase tracking-wider">Tambah Kategori</h2>
-          <form onSubmit={handleAddCategory} className="flex gap-2">
+          <form onSubmit={handleAddCategory} className="flex flex-col md:flex-row gap-2">
             <input type="text" placeholder="Nama Kategori" value={newCat} onChange={e => setNewCat(e.target.value)}
               className="flex-1 px-4 py-2.5 border border-gray-200 rounded-xl text-gray-900 text-sm focus:outline-none focus:border-gray-400 transition" required />
             <button type="submit" className="bg-gray-800 text-white px-4 py-2.5 rounded-xl text-sm font-medium hover:bg-gray-700 transition">Tambah</button>
@@ -133,11 +133,11 @@ export default function AdminPage() {
           {/* QRIS Settings */}
           <div className="mb-6 p-4 bg-gray-50 rounded-xl border border-gray-200">
             <h3 className="font-bold text-gray-800 mb-2 text-sm">QRIS Settings</h3>
-            <form onSubmit={handleSaveQris} className="flex gap-2">
+            <form onSubmit={handleSaveQris} className="flex flex-col md:flex-row gap-2">
               <input type="text" placeholder="QRIS Merchant ID / URL" value={qrisMerchant}
                 onChange={e => setQrisMerchant(e.target.value)}
-                className="flex-1 px-4 py-2.5 border border-gray-200 rounded-xl text-gray-900 text-sm focus:outline-none focus:border-gray-400 transition" />
-              <button type="submit" className="bg-gray-800 text-white px-4 py-2.5 rounded-xl text-sm font-medium hover:bg-gray-700 transition">Simpan</button>
+                className="flex-1 px-4 py-2 border border-gray-200 rounded-xl text-gray-900 text-sm focus:outline-none focus:border-gray-400 transition" />
+              <button type="submit" className="bg-gray-800 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-gray-700 transition">Simpan</button>
             </form>
             <p className="text-xs text-gray-500 mt-2">Masukkan nomor/URL QRIS merchant. Akan ditampilkan sebagai QR code saat pembayaran QRIS.</p>
           </div>

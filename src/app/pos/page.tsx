@@ -169,6 +169,7 @@ export default function POSPage() {
               {user?.role === 'admin' && (
                 <>
                   <button onClick={() => router.push('/admin')} className="w-full text-left text-sm px-4 py-2 hover:bg-gray-700 transition">⚙️ Admin</button>
+                  <button onClick={() => router.push('/admin/discounts')} className="w-full text-left text-sm px-4 py-2 hover:bg-gray-700 transition">🏷️ Diskon</button>
                   <button onClick={() => router.push('/users')} className="w-full text-left text-sm px-4 py-2 hover:bg-gray-700 transition">👥 Users</button>
                   <button onClick={() => router.push('/pembukuan')} className="w-full text-left text-sm px-4 py-2 hover:bg-gray-700 transition">📊 Report</button>
                 </>

@@ -174,7 +174,12 @@ export default function TransaksiPage() {
                 <div className="px-5 pb-4 border-t border-gray-100 pt-3 space-y-1">
                   {t.items.map((item, i) => (
                     <div key={i} className="flex justify-between text-sm text-gray-600">
-                      <span>{item.serviceName} x{item.qty}</span>
+                      <span>
+                        {item.serviceName} x{item.qty}
+                        {(item as { discountPercent?: number }).discountPercent ? (
+                          <span className="text-red-500 text-xs ml-1">(disc {(item as { discountPercent?: number }).discountPercent}%)</span>
+                        ) : null}
+                      </span>
                       <span>{fmt(item.subtotal)}</span>
                     </div>
                   ))}

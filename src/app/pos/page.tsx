@@ -174,33 +174,35 @@ export default function POSPage() {
         </div>
 
         {/* Right: Cart */}
-        <div className="w-96 bg-white border-l flex flex-col">
-          <div className="p-4 border-b"><h2 className="font-bold text-gray-800">Keranjang</h2></div>
+        <div className="w-96 bg-gradient-to-b from-gray-50 to-white border-l flex flex-col">
+          <div className="p-4 border-b bg-white">
+            <h2 className="font-bold text-gray-800 text-lg flex items-center gap-2">🛒 Keranjang</h2>
+          </div>
           <div className="flex-1 overflow-y-auto p-4 space-y-2">
-            {cart.length === 0 && <p className="text-gray-400 text-center mt-8">Belum ada item</p>}
+            {cart.length === 0 && <p className="text-gray-400 text-center mt-16 text-sm">Belum ada item</p>}
             {cart.map(item => (
-              <div key={item.serviceId} className="flex items-center justify-between bg-gray-50 p-2 rounded">
+              <div key={item.serviceId} className="flex items-center justify-between bg-white p-3 rounded-xl shadow-sm border border-gray-100">
                 <div className="flex-1">
-                  <p className="text-sm font-medium text-gray-800">{item.serviceName}</p>
-                  <p className="text-xs text-gray-500">{fmt(item.price)}</p>
+                  <p className="text-sm font-semibold text-gray-800">{item.serviceName}</p>
+                  <p className="text-xs text-gray-400">{fmt(item.price)} / item</p>
                 </div>
                 <div className="flex items-center gap-2">
-                  <button onClick={() => updateQty(item.serviceId, item.qty - 1)} className="w-6 h-6 bg-gray-200 rounded text-gray-700">-</button>
-                  <span className="text-sm w-6 text-center text-gray-800">{item.qty}</span>
-                  <button onClick={() => updateQty(item.serviceId, item.qty + 1)} className="w-6 h-6 bg-gray-200 rounded text-gray-700">+</button>
-                  <span className="text-sm font-medium w-20 text-right text-gray-800">{fmt(item.subtotal)}</span>
-                  <button onClick={() => removeFromCart(item.serviceId)} className="text-red-400 text-xs ml-1">✕</button>
+                  <button onClick={() => updateQty(item.serviceId, item.qty - 1)} className="w-7 h-7 bg-gray-100 rounded-full text-gray-600 font-bold hover:bg-gray-200 transition">-</button>
+                  <span className="text-sm w-6 text-center font-semibold text-gray-800">{item.qty}</span>
+                  <button onClick={() => updateQty(item.serviceId, item.qty + 1)} className="w-7 h-7 bg-gray-800 rounded-full text-white font-bold hover:bg-gray-700 transition">+</button>
+                  <span className="text-sm font-bold w-20 text-right text-gray-800">{fmt(item.subtotal)}</span>
+                  <button onClick={() => removeFromCart(item.serviceId)} className="text-red-400 hover:text-red-600 text-sm ml-1 transition">✕</button>
                 </div>
               </div>
             ))}
           </div>
-          <div className="p-4 border-t space-y-3">
+          <div className="p-4 border-t bg-white space-y-3">
             <div className="flex justify-between text-lg font-bold text-gray-800">
               <span>Total</span><span>{fmt(total)}</span>
             </div>
             {!showPay ? (
               <button onClick={() => setShowPay(true)} disabled={cart.length === 0}
-                className="w-full bg-green-600 text-white py-3 rounded-lg font-bold hover:bg-green-700 disabled:opacity-50">Bayar</button>
+                className="w-full bg-gray-800 text-white py-3 rounded-xl font-bold hover:bg-gray-700 disabled:opacity-40 transition-all duration-200 text-lg">Bayar</button>
             ) : (
               <div className="space-y-2">
                 <select value={payMethod} onChange={e => setPayMethod(e.target.value)}

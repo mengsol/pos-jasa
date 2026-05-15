@@ -7,7 +7,7 @@ interface Transaction {
   id: string; invoiceNo: string; totalAmount: number; createdAt: string; status: string
   cancelUser?: string; approvedUser?: string; cancelDate?: string; cancelReason?: string
   user: { name: string }; outlet: { name: string }
-  payments: Payment[]; items: { serviceName: string; qty: number; subtotal: number }[]
+  payments: Payment[]; items: { serviceName: string; qty: number; price: number; subtotal: number }[]
 }
 
 export default function PembukuanPage() {
@@ -149,14 +149,39 @@ export default function PembukuanPage() {
                     </td>
                     <td className={`text-right pr-4 font-medium ${t.status === 'cancelled' ? 'text-red-500 line-through' : 'text-gray-800'}`}>{fmt(t.totalAmount)}</td>
                   </tr>
-                  {expandedId === t.id && t.status === 'cancelled' && (
-                    <tr key={t.id + '-detail'} className="bg-red-50/30">
+                  {expandedId === t.id && (
+                    <tr key={t.id + '-detail'} className="bg-gray-50/50">
                       <td colSpan={6} className="px-6 py-3">
-                        <div className="grid grid-cols-2 gap-x-8 gap-y-1 text-xs">
-                          <div><span className="text-gray-500">Cancel by:</span> <span className="text-red-700 font-medium">{t.cancelUser || '-'}</span></div>
-                          <div><span className="text-gray-500">Approved by:</span> <span className="text-red-700 font-medium">{t.approvedUser || '-'}</span></div>
-                          <div><span className="text-gray-500">Cancel date:</span> <span className="text-red-700 font-medium">{t.cancelDate ? new Date(t.cancelDate).toLocaleString('id-ID') : '-'}</span></div>
-                          <div><span className="text-gray-500">Reason:</span> <span className="text-red-700 font-medium">{t.cancelReason || '-'}</span></div>
+                        <div className="space-y-2">
+                          {/* Item details with discount info */}
+                          <div className="text-xs">
+                            <p className="font-medium text-gray-500 uppercase tracking-wider mb-1">Detail Item:</p>
+                            {t.items.map((item, i) => {
+                              const hasDiscount = item.price < item.subtotal / item.qty ? false : true
+                              return (
+                                <div key={i} className="flex justify-between py-0.5">
+                                  <span className="text-gray-700">{item.serviceName} x{item.qty} @ {fmt(item.price)}</span>
+                                  <span className="text-gray-800 font-medium">{fmt(item.subtotal)}</span>
+                                </div>
+                              )
+                            })}
+                          </div>
+                          {/* Payment info */}
+                          <div className="text-xs border-t border-gray-200 pt-1">
+                            <span className="text-gray-500">Bayar: </span>
+                            {t.payments.map((p, i) => (
+                              <span key={i} className="text-gray-700">{p.method.toUpperCase()} {fmt(p.amount)} </span>
+                            ))}
+                          </div>
+                          {/* Cancel info */}
+                          {t.status === 'cancelled' && (
+                            <div className="border-t border-red-200 pt-2 grid grid-cols-2 gap-x-8 gap-y-1 text-xs">
+                              <div><span className="text-gray-500">Cancel by:</span> <span className="text-red-700 font-medium">{t.cancelUser || '-'}</span></div>
+                              <div><span className="text-gray-500">Approved by:</span> <span className="text-red-700 font-medium">{t.approvedUser || '-'}</span></div>
+                              <div><span className="text-gray-500">Cancel date:</span> <span className="text-red-700 font-medium">{t.cancelDate ? new Date(t.cancelDate).toLocaleString('id-ID') : '-'}</span></div>
+                              <div><span className="text-gray-500">Reason:</span> <span className="text-red-700 font-medium">{t.cancelReason || '-'}</span></div>
+                            </div>
+                          )}
                         </div>
                       </td>
                     </tr>

@@ -385,10 +385,22 @@ export default function POSPage() {
                   ))}
                   {receipt.items.map((item, i) => (
                     <tr key={'d'+i}>
-                      <td style={{fontSize:'10px',paddingLeft:'8px', color:'#000'}}>{item.qty} x {fmt(item.price)}</td>
+                      <td style={{fontSize:'10px',paddingLeft:'8px', color:'#000'}}>
+                        {item.qty} x {fmt(item.price)}
+                        {item.discountPercent > 0 && (
+                          <span style={{color:'#dc2626'}}> (disc {item.discountPercent}%)</span>
+                        )}
+                      </td>
                       <td className="right" style={{fontSize:'10px', color:'#000'}}>{fmt(item.subtotal)}</td>
                     </tr>
                   ))}
+                  {receipt.items.some(i => i.discountPercent > 0) && (
+                    <tr>
+                      <td colSpan={2} style={{fontSize:'9px', color:'#666', paddingTop:'2px'}}>
+                        * Harga sudah termasuk diskon
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
               <div className="line" />

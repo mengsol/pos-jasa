@@ -65,11 +65,13 @@ export async function POST(req: NextRequest) {
       totalAmount,
       note,
       items: {
-        create: items.map((i: { serviceId: string; serviceName: string; qty: number; price: number; subtotal: number }) => ({
+        create: items.map((i: { serviceId: string; serviceName: string; qty: number; price: number; originalPrice?: number; discountPercent?: number; subtotal: number }) => ({
           serviceId: i.serviceId,
           serviceName: i.serviceName,
           qty: i.qty,
           price: i.price,
+          originalPrice: i.originalPrice || i.price,
+          discountPercent: i.discountPercent || 0,
           subtotal: i.subtotal,
         })),
       },

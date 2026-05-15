@@ -7,7 +7,7 @@ interface Transaction {
   id: string; invoiceNo: string; totalAmount: number; createdAt: string; status: string
   cancelUser?: string; approvedUser?: string; cancelDate?: string; cancelReason?: string
   user: { name: string }; outlet: { name: string }
-  payments: Payment[]; items: { serviceName: string; qty: number; price: number; subtotal: number }[]
+  payments: Payment[]; items: { serviceName: string; qty: number; price: number; originalPrice?: number; discountPercent?: number; subtotal: number }[]
 }
 
 export default function PembukuanPage() {
@@ -120,14 +120,18 @@ export default function PembukuanPage() {
 
         {/* Transaction Table */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+          <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="bg-gray-50 text-left text-gray-600 border-b">
+              <tr className="bg-gray-50 text-left text-gray-600 border-b text-xs">
                 <th className="px-4 py-3">Invoice</th>
                 <th>Waktu</th>
                 <th>Kasir</th>
                 <th>Item</th>
+                <th className="text-right">Harga Satuan</th>
                 <th>Status</th>
+                <th className="text-right">Harga</th>
+                <th className="text-right">Diskon</th>
                 <th className="text-right pr-4">Total</th>
               </tr>
             </thead>
@@ -137,9 +141,12 @@ export default function PembukuanPage() {
                   <tr key={t.id} className={`border-b cursor-pointer transition ${t.status === 'cancelled' ? 'bg-red-50/50 hover:bg-red-50' : 'hover:bg-gray-50'}`}
                     onClick={() => setExpandedId(expandedId === t.id ? null : t.id)}>
                     <td className="px-4 py-2 font-mono text-xs text-gray-800">{t.invoiceNo}</td>
-                    <td className="text-gray-600 text-xs">{new Date(t.createdAt).toLocaleString('id-ID')}</td>
-                    <td className="text-gray-700">{t.user.name}</td>
-                    <td className="text-gray-600 text-xs max-w-[200px] truncate">{t.items.map(i => `${i.serviceName} x${i.qty}`).join(', ')}</td>
+                    <td className="text-gray-600 text-xs whitespace-nowrap">{new Date(t.createdAt).toLocaleString('id-ID')}</td>
+                    <td className="text-gray-700 text-xs">{t.user.name}</td>
+                    <td className="text-gray-600 text-xs max-w-[150px] truncate">{t.items.map(i => `${i.serviceName} x${i.qty}`).join(', ')}</td>
+                    <td className="text-right text-xs text-gray-700 whitespace-nowrap">
+                      {t.items.map(i => fmt(i.originalPrice || i.price)).join(', ')}
+                    </td>
                     <td>
                       {t.status === 'cancelled' ? (
                         <span className="inline-block px-2 py-0.5 rounded-full text-xs bg-red-100 text-red-700 font-medium">Cancelled</span>
@@ -147,33 +154,44 @@ export default function PembukuanPage() {
                         <span className="inline-block px-2 py-0.5 rounded-full text-xs bg-green-100 text-green-700 font-medium">Completed</span>
                       )}
                     </td>
-                    <td className={`text-right pr-4 font-medium ${t.status === 'cancelled' ? 'text-red-500 line-through' : 'text-gray-800'}`}>{fmt(t.totalAmount)}</td>
+                    <td className="text-right text-xs text-gray-700 whitespace-nowrap">
+                      {fmt(t.items.reduce((s, i) => s + (i.originalPrice || i.price) * i.qty, 0))}
+                    </td>
+                    <td className="text-right text-xs whitespace-nowrap">
+                      {t.items.reduce((s, i) => s + (i.originalPrice || i.price) * i.qty, 0) - t.totalAmount > 0 ? (
+                        <span className="text-red-600 font-medium">
+                          -{fmt(t.items.reduce((s, i) => s + (i.originalPrice || i.price) * i.qty, 0) - t.totalAmount)}
+                        </span>
+                      ) : (
+                        <span className="text-gray-400">-</span>
+                      )}
+                    </td>
+                    <td className={`text-right pr-4 font-medium whitespace-nowrap ${t.status === 'cancelled' ? 'text-red-500 line-through' : 'text-gray-800'}`}>{fmt(t.totalAmount)}</td>
                   </tr>
                   {expandedId === t.id && (
                     <tr key={t.id + '-detail'} className="bg-gray-50/50">
-                      <td colSpan={6} className="px-6 py-3">
+                      <td colSpan={9} className="px-6 py-3">
                         <div className="space-y-2">
-                          {/* Item details with discount info */}
                           <div className="text-xs">
-                            <p className="font-medium text-gray-500 uppercase tracking-wider mb-1">Detail Item:</p>
-                            {t.items.map((item, i) => {
-                              const hasDiscount = item.price < item.subtotal / item.qty ? false : true
-                              return (
-                                <div key={i} className="flex justify-between py-0.5">
-                                  <span className="text-gray-700">{item.serviceName} x{item.qty} @ {fmt(item.price)}</span>
-                                  <span className="text-gray-800 font-medium">{fmt(item.subtotal)}</span>
-                                </div>
-                              )
-                            })}
+                            <p className="font-medium text-gray-500 uppercase tracking-wider mb-1">Detail:</p>
+                            {t.items.map((item, i) => (
+                              <div key={i} className="flex justify-between py-0.5">
+                                <span className="text-gray-700">
+                                  {item.serviceName} x{item.qty} @ {fmt(item.price)}
+                                  {(item.discountPercent || 0) > 0 && (
+                                    <span className="text-red-500 ml-1">(disc {item.discountPercent}% dari {fmt(item.originalPrice || item.price)})</span>
+                                  )}
+                                </span>
+                                <span className="text-gray-800 font-medium">{fmt(item.subtotal)}</span>
+                              </div>
+                            ))}
                           </div>
-                          {/* Payment info */}
                           <div className="text-xs border-t border-gray-200 pt-1">
                             <span className="text-gray-500">Bayar: </span>
                             {t.payments.map((p, i) => (
                               <span key={i} className="text-gray-700">{p.method.toUpperCase()} {fmt(p.amount)} </span>
                             ))}
                           </div>
-                          {/* Cancel info */}
                           {t.status === 'cancelled' && (
                             <div className="border-t border-red-200 pt-2 grid grid-cols-2 gap-x-8 gap-y-1 text-xs">
                               <div><span className="text-gray-500">Cancel by:</span> <span className="text-red-700 font-medium">{t.cancelUser || '-'}</span></div>

@@ -8,7 +8,7 @@ export async function GET() {
 
   const services = await prisma.service.findMany({
     where: { active: true },
-    include: { category: { include: { parent: true } } },
+    include: { category: { include: { parent: { include: { parent: true } } } } },
     orderBy: { name: 'asc' },
   })
   return NextResponse.json(services)

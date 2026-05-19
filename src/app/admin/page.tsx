@@ -155,7 +155,12 @@ export default function AdminPage() {
               <select value={newCatParent} onChange={e => setNewCatParent(e.target.value)}
                 className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-gray-900 text-sm focus:outline-none focus:border-gray-400 transition">
                 <option value="">-- Parent (kosong = parent baru) --</option>
-                {categories.filter(c => !c.parentId).map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                {categories.filter(c => !c.parentId).map(c => (
+                  <optgroup key={c.id} label={c.name}>
+                    <option value={c.id}>{c.name}</option>
+                    {c.children?.map(child => <option key={child.id} value={child.id}>└ {child.name}</option>)}
+                  </optgroup>
+                ))}
               </select>
               <button type="submit" className="w-full bg-gray-800 text-white px-4 py-2.5 rounded-xl text-sm font-medium hover:bg-gray-700 transition">Tambah</button>
             </form>

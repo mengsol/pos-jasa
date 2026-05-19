@@ -206,13 +206,18 @@ export default function POSPage() {
     font-family: 'Courier New', monospace; font-size: 11px;
     width: 72mm; margin: 0 auto; padding: 2mm; line-height: 1.4;
     position: relative;
+    text-align: center;
   }
   body::before {
     content: "";
-    position: fixed; inset: 0;
+    position: fixed;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 40mm;
+    height: 40mm;
     background: url('/bg2.jpg') no-repeat center center;
     background-size: contain;
-    opacity: 0.5;
+    opacity: 0.4;
     z-index: -1;
     print-color-adjust: exact;
     -webkit-print-color-adjust: exact;

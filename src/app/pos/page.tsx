@@ -206,28 +206,28 @@ export default function POSPage() {
     font-family: 'Courier New', monospace; font-size: 11px;
     width: 72mm; margin: 0 auto; padding: 2mm; line-height: 1.4;
     position: relative;
-    text-align: center;
   }
   body::before {
     content: "";
-    position: fixed;
+    position: absolute;
     top: 50%; left: 50%;
     transform: translate(-50%, -50%);
-    width: 40mm;
-    height: 40mm;
+    width: 55mm;
+    height: 55mm;
     background: url('/bg2.jpg') no-repeat center center;
     background-size: contain;
-    opacity: 0.4;
-    z-index: -1;
+    opacity: 0.15;
+    z-index: 0;
     print-color-adjust: exact;
     -webkit-print-color-adjust: exact;
   }
+  body > * { position: relative; z-index: 1; }
   .center { text-align: center; }
   .right { text-align: right; }
   .bold { font-weight: bold; }
   .line { border-top: 1px dashed #000; margin: 3px 0; }
   .sm { font-size: 9px; }
-  table { width: 100%; border-collapse: collapse; }
+  table { width: 100%; border-collapse: collapse; position: relative; z-index: 1; }
   td { padding: 0; vertical-align: top; }
 </style></head><body>${receiptRef.current.innerHTML}</body></html>`)
     pw.document.close()

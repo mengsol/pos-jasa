@@ -17,6 +17,7 @@ export default function PembukuanPage() {
   const [from, setFrom] = useState(new Date().toISOString().slice(0, 10))
   const [to, setTo] = useState(new Date().toISOString().slice(0, 10))
   const [expandedId, setExpandedId] = useState<string | null>(null)
+  const [showMenu, setShowMenu] = useState(false)
   const router = useRouter()
 
   useEffect(() => {
@@ -58,7 +59,19 @@ export default function PembukuanPage() {
     <div className="min-h-screen bg-gray-50">
       <div className="bg-gray-800 text-white px-4 py-3 flex justify-between items-center">
         <h1 className="text-lg font-bold tracking-wide">📊 Report</h1>
-        <button onClick={() => router.push('/pos')} className="text-sm bg-gray-700 px-3 py-1.5 rounded-lg hover:bg-gray-600 transition">← Back to Main</button>
+        <div className="relative">
+          <button onClick={() => setShowMenu(!showMenu)} className="text-sm bg-gray-700 px-3 py-1.5 rounded-lg hover:bg-gray-600 transition">☰ Menu</button>
+          {showMenu && (
+            <>
+              <div className="fixed inset-0 z-40" onClick={() => setShowMenu(false)} />
+              <div className="absolute right-0 top-full mt-1 bg-gray-800 border border-gray-700 rounded-xl shadow-xl min-w-[140px] py-1 z-50">
+                <button onClick={() => { setShowMenu(false); router.push('/pos') }} className="w-full text-left text-sm px-4 py-2 hover:bg-gray-700 transition">🏠 Main</button>
+                <button onClick={() => { setShowMenu(false); router.push('/admin') }} className="w-full text-left text-sm px-4 py-2 hover:bg-gray-700 transition">⚙️ Admin</button>
+                <button onClick={() => { setShowMenu(false); router.push('/transaksi') }} className="w-full text-left text-sm px-4 py-2 hover:bg-gray-700 transition">🧾 Transaksi</button>
+              </div>
+            </>
+          )}
+        </div>
       </div>
 
       <div className="max-w-6xl mx-auto p-4 md:p-6">

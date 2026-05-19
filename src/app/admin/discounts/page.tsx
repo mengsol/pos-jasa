@@ -19,6 +19,7 @@ export default function DiscountsPage() {
   const [dateFrom, setDateFrom] = useState(new Date().toISOString().slice(0, 10))
   const [dateTo, setDateTo] = useState('')
   const [error, setError] = useState('')
+  const [showMenu, setShowMenu] = useState(false)
   const router = useRouter()
 
   useEffect(() => {
@@ -90,9 +91,18 @@ export default function DiscountsPage() {
     <div className="min-h-screen bg-gray-50">
       <div className="bg-gray-800 text-white px-4 py-3 flex justify-between items-center">
         <h1 className="text-base md:text-lg font-bold tracking-wide">🏷️ Diskon</h1>
-        <div className="flex gap-2">
-          <button onClick={() => router.push('/admin')} className="text-xs md:text-sm bg-gray-700 px-3 py-1.5 rounded-lg hover:bg-gray-600 transition">⚙️ Admin</button>
-          <button onClick={() => router.push('/pos')} className="text-xs md:text-sm bg-gray-700 px-3 py-1.5 rounded-lg hover:bg-gray-600 transition">← Back</button>
+        <div className="relative">
+          <button onClick={() => setShowMenu(!showMenu)} className="text-xs md:text-sm bg-gray-700 px-3 py-1.5 rounded-lg hover:bg-gray-600 transition">☰ Menu</button>
+          {showMenu && (
+            <>
+              <div className="fixed inset-0 z-40" onClick={() => setShowMenu(false)} />
+              <div className="absolute right-0 top-full mt-1 bg-gray-800 border border-gray-700 rounded-xl shadow-xl min-w-[140px] py-1 z-50">
+                <button onClick={() => { setShowMenu(false); router.push('/pos') }} className="w-full text-left text-sm px-4 py-2 hover:bg-gray-700 transition">🏠 Main</button>
+                <button onClick={() => { setShowMenu(false); router.push('/admin') }} className="w-full text-left text-sm px-4 py-2 hover:bg-gray-700 transition">⚙️ Admin</button>
+                <button onClick={() => { setShowMenu(false); router.push('/pembukuan') }} className="w-full text-left text-sm px-4 py-2 hover:bg-gray-700 transition">📊 Report</button>
+              </div>
+            </>
+          )}
         </div>
       </div>
 

@@ -38,10 +38,13 @@ model Outlet {
 }
 
 model Category {
-  id        String   @id @default(cuid())
+  id        String     @id @default(cuid())
   name      String
-  active    Boolean  @default(true)
-  createdAt DateTime @default(now())
+  parentId  String?
+  parent    Category?  @relation("CategoryTree", fields: [parentId], references: [id])
+  children  Category[] @relation("CategoryTree")
+  active    Boolean    @default(true)
+  createdAt DateTime   @default(now())
 
   services Service[]
 }

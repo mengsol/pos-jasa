@@ -6,7 +6,7 @@ import QRCode from 'qrcode'
 interface Service {
   id: string; name: string; price: number
   categoryId?: string | null
-  category?: { name: string } | null
+  category?: { id: string; name: string; parentId?: string | null; parent?: { id: string; name: string } | null } | null
 }
 interface CartItem {
   serviceId: string; serviceName: string; qty: number; price: number; originalPrice: number; discountPercent: number; subtotal: number
@@ -23,6 +23,7 @@ export default function POSPage() {
   const [services, setServices] = useState<Service[]>([])
   const [cart, setCart] = useState<CartItem[]>([])
   const [search, setSearch] = useState('')
+  const [selectedParent, setSelectedParent] = useState<string>('all')
   const [payMethod, setPayMethod] = useState('cash')
   const [payAmount, setPayAmount] = useState('')
   const [user, setUser] = useState<{ name: string; role: string } | null>(null)
@@ -80,7 +81,36 @@ export default function POSPage() {
   const total = cart.reduce((s, i) => s + i.subtotal, 0)
   const filtered = services.filter(s =>
     s.name.toLowerCase().includes(search.toLowerCase())
-  )
+  ).filter(s => {
+    if (selectedParent === 'all') return true
+    const cat = s.category
+    if (!cat) return false
+    // Service langsung di parent
+    if (cat.id === selectedParent && !cat.parentId) return true
+    // Service di child dari parent
+    if (cat.parentId === selectedParent) return true
+    return false
+  })
+
+  // Group filtered services by subcategory
+  const grouped = filtered.reduce<Record<string, Service[]>>((acc, svc) => {
+    const groupName = svc.category?.parentId ? svc.category.name : '_direct'
+    if (!acc[groupName]) acc[groupName] = []
+    acc[groupName].push(svc)
+    return acc
+  }, {})
+
+  // Get parent categories for tabs
+  const parentCategories = services.reduce<{ id: string; name: string }[]>((acc, svc) => {
+    const cat = svc.category
+    if (!cat) return acc
+    const parentId = cat.parentId ? cat.parent?.id : cat.id
+    const parentName = cat.parentId ? cat.parent?.name : cat.name
+    if (parentId && parentName && !acc.find(p => p.id === parentId)) {
+      acc.push({ id: parentId, name: parentName })
+    }
+    return acc
+  }, []).sort((a, b) => a.name.localeCompare(b.name))
 
   function getDiscountForService(svc: Service): number {
     let totalDiscount = 0
@@ -222,30 +252,50 @@ export default function POSPage() {
           <input type="text" placeholder="Cari jasa..." value={search}
             onChange={e => setSearch(e.target.value)}
             className="w-full px-4 py-2.5 border border-gray-200 rounded-xl mb-3 text-gray-900 bg-white text-sm focus:outline-none focus:border-gray-400 transition" />
+
+          {/* Parent category tabs */}
+          <div className="flex gap-2 mb-3 overflow-x-auto pb-1">
+            <button onClick={() => setSelectedParent('all')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition ${selectedParent === 'all' ? 'bg-gray-800 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}>Semua</button>
+            {parentCategories.map(cat => (
+              <button key={cat.id} onClick={() => setSelectedParent(cat.id)}
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition ${selectedParent === cat.id ? 'bg-gray-800 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}>{cat.name}</button>
+            ))}
+          </div>
+
           <div className="flex-1 md:bg-[url('/bg.jpeg')] md:bg-contain md:bg-top md:bg-no-repeat rounded-lg p-3">
             {!discountsLoaded ? (
               <div className="flex items-center justify-center h-32">
                 <p className="text-gray-400 text-sm">Memuat data...</p>
               </div>
             ) : (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-              {filtered.map(svc => (
-                <button key={svc.id} onClick={() => addToCart(svc)}
-                  className="bg-white/75 backdrop-blur-sm p-4 md:p-5 rounded-2xl shadow-md hover:shadow-lg hover:bg-white/90 transition-all duration-200 text-left border border-white/50 relative">
-                  {getDiscountForService(svc) > 0 && (
-                    <span className="absolute top-2 right-2 bg-red-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-lg">-{getDiscountForService(svc)}%</span>
+            <div className="space-y-4">
+              {Object.entries(grouped).sort(([a], [b]) => a === '_direct' ? 1 : b === '_direct' ? -1 : a.localeCompare(b)).map(([groupName, items]) => (
+                <div key={groupName}>
+                  {groupName !== '_direct' && (
+                    <h3 className="text-sm font-bold text-gray-700 mb-2 bg-white/60 backdrop-blur-sm px-3 py-1 rounded-lg inline-block">{groupName}</h3>
                   )}
-                  <p className="font-bold text-gray-900 text-sm md:text-base">{svc.name}</p>
-                  <p className="text-xs md:text-sm text-gray-500 mt-0.5">{svc.category?.name}</p>
-                  {getDiscountForService(svc) > 0 ? (
-                    <div className="mt-1 md:mt-2">
-                      <p className="text-gray-400 line-through text-xs">{fmt(svc.price)}</p>
-                      <p className="text-red-600 font-bold text-base md:text-lg">{fmt(Math.round(svc.price * (1 - getDiscountForService(svc) / 100)))}</p>
-                    </div>
-                  ) : (
-                    <p className="text-gray-800 font-bold mt-1 md:mt-2 text-base md:text-lg">{fmt(svc.price)}</p>
-                  )}
-                </button>
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                    {items.map(svc => (
+                      <button key={svc.id} onClick={() => addToCart(svc)}
+                        className="bg-white/75 backdrop-blur-sm p-4 md:p-5 rounded-2xl shadow-md hover:shadow-lg hover:bg-white/90 transition-all duration-200 text-left border border-white/50 relative">
+                        {getDiscountForService(svc) > 0 && (
+                          <span className="absolute top-2 right-2 bg-red-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-lg">-{getDiscountForService(svc)}%</span>
+                        )}
+                        <p className="font-bold text-gray-900 text-sm md:text-base">{svc.name}</p>
+                        <p className="text-xs md:text-sm text-gray-500 mt-0.5">{svc.category?.name}</p>
+                        {getDiscountForService(svc) > 0 ? (
+                          <div className="mt-1 md:mt-2">
+                            <p className="text-gray-400 line-through text-xs">{fmt(svc.price)}</p>
+                            <p className="text-red-600 font-bold text-base md:text-lg">{fmt(Math.round(svc.price * (1 - getDiscountForService(svc) / 100)))}</p>
+                          </div>
+                        ) : (
+                          <p className="text-gray-800 font-bold mt-1 md:mt-2 text-base md:text-lg">{fmt(svc.price)}</p>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                </div>
               ))}
             </div>
             )}

@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 
 interface Service { id: string; name: string; price: number; categoryId: string | null; category?: { name: string } | null }
-interface Category { id: string; name: string }
+interface Category { id: string; name: string; parentId?: string | null; children?: Category[] }
 
 export default function AdminPage() {
   const [services, setServices] = useState<Service[]>([])
@@ -12,6 +12,7 @@ export default function AdminPage() {
   const [price, setPrice] = useState('')
   const [catId, setCatId] = useState('')
   const [newCat, setNewCat] = useState('')
+  const [newCatParent, setNewCatParent] = useState('')
   const [editCatId, setEditCatId] = useState<string | null>(null)
   const [editCatName, setEditCatName] = useState('')
   const [editId, setEditId] = useState<string | null>(null)
@@ -63,8 +64,8 @@ export default function AdminPage() {
   async function handleAddCategory(e: React.FormEvent) {
     e.preventDefault()
     if (!newCat) return
-    await fetch('/api/categories', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: newCat }) })
-    setNewCat('')
+    await fetch('/api/categories', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: newCat, parentId: newCatParent || null }) })
+    setNewCat(''); setNewCatParent('')
     loadData()
   }
 
@@ -117,7 +118,12 @@ export default function AdminPage() {
               className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-gray-900 text-sm focus:outline-none focus:border-gray-400 transition" required />
             <select value={catId} onChange={e => setCatId(e.target.value)} className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-gray-900 text-sm focus:outline-none focus:border-gray-400 transition">
               <option value="">-- Pilih Kategori --</option>
-              {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+              {categories.filter(c => !c.parentId).map(c => (
+                <optgroup key={c.id} label={c.name}>
+                  <option value={c.id}>{c.name} (langsung)</option>
+                  {c.children?.map(child => <option key={child.id} value={child.id}>└ {child.name}</option>)}
+                </optgroup>
+              ))}
             </select>
             <div className="flex gap-2">
               <button type="submit" className="flex-1 bg-gray-800 text-white py-2.5 rounded-xl text-sm font-medium hover:bg-gray-700 transition">
@@ -143,22 +149,44 @@ export default function AdminPage() {
                 className="bg-gray-100 text-gray-600 px-4 py-2.5 rounded-xl text-sm font-medium hover:bg-gray-200 transition">Batal</button>
             </form>
           ) : (
-            <form onSubmit={handleAddCategory} className="flex flex-col md:flex-row gap-2">
+            <form onSubmit={handleAddCategory} className="space-y-2">
               <input type="text" placeholder="Nama Kategori" value={newCat} onChange={e => setNewCat(e.target.value)}
-                className="flex-1 px-4 py-2.5 border border-gray-200 rounded-xl text-gray-900 text-sm focus:outline-none focus:border-gray-400 transition" required />
-              <button type="submit" className="bg-gray-800 text-white px-4 py-2.5 rounded-xl text-sm font-medium hover:bg-gray-700 transition">Tambah</button>
+                className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-gray-900 text-sm focus:outline-none focus:border-gray-400 transition" required />
+              <select value={newCatParent} onChange={e => setNewCatParent(e.target.value)}
+                className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-gray-900 text-sm focus:outline-none focus:border-gray-400 transition">
+                <option value="">-- Parent (kosong = parent baru) --</option>
+                {categories.filter(c => !c.parentId).map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+              </select>
+              <button type="submit" className="w-full bg-gray-800 text-white px-4 py-2.5 rounded-xl text-sm font-medium hover:bg-gray-700 transition">Tambah</button>
             </form>
           )}
           <div className="mt-4 space-y-1.5">
-            {categories.map(c => (
-              <div key={c.id} className="flex items-center justify-between text-sm text-gray-700 bg-gray-50 px-3 py-2 rounded-lg">
-                <span>{c.name}</span>
-                <div className="flex gap-1.5">
-                  <button onClick={() => { setEditCatId(c.id); setEditCatName(c.name) }}
-                    className="text-xs bg-gray-200 text-gray-700 px-2 py-1 rounded-lg hover:bg-gray-300 transition">Edit</button>
-                  <button onClick={() => handleDeleteCategory(c.id)}
-                    className="text-xs bg-red-50 text-red-600 px-2 py-1 rounded-lg hover:bg-red-100 transition">Hapus</button>
+            {categories.filter(c => !c.parentId).map(c => (
+              <div key={c.id}>
+                <div className="flex items-center justify-between text-sm text-gray-700 bg-gray-50 px-3 py-2 rounded-lg font-medium">
+                  <span>📁 {c.name}</span>
+                  <div className="flex gap-1.5">
+                    <button onClick={() => { setEditCatId(c.id); setEditCatName(c.name) }}
+                      className="text-xs bg-gray-200 text-gray-700 px-2 py-1 rounded-lg hover:bg-gray-300 transition">Edit</button>
+                    <button onClick={() => handleDeleteCategory(c.id)}
+                      className="text-xs bg-red-50 text-red-600 px-2 py-1 rounded-lg hover:bg-red-100 transition">Hapus</button>
+                  </div>
                 </div>
+                {c.children && c.children.length > 0 && (
+                  <div className="ml-4 mt-1 space-y-1">
+                    {c.children.map(child => (
+                      <div key={child.id} className="flex items-center justify-between text-sm text-gray-600 bg-gray-50/50 px-3 py-1.5 rounded-lg">
+                        <span>└ {child.name}</span>
+                        <div className="flex gap-1.5">
+                          <button onClick={() => { setEditCatId(child.id); setEditCatName(child.name) }}
+                            className="text-xs bg-gray-200 text-gray-700 px-2 py-1 rounded-lg hover:bg-gray-300 transition">Edit</button>
+                          <button onClick={() => handleDeleteCategory(child.id)}
+                            className="text-xs bg-red-50 text-red-600 px-2 py-1 rounded-lg hover:bg-red-100 transition">Hapus</button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             ))}
           </div>

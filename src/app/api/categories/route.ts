@@ -9,6 +9,7 @@ export async function GET() {
   const categories = await prisma.category.findMany({
     where: { active: true },
     orderBy: { name: 'asc' },
+    include: { children: { where: { active: true }, orderBy: { name: 'asc' } } },
   })
   return NextResponse.json(categories)
 }
@@ -17,7 +18,9 @@ export async function POST(req: NextRequest) {
   const user = await getSession()
   if (!user || user.role !== 'admin') return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
 
-  const { name } = await req.json()
-  const category = await prisma.category.create({ data: { name } })
+  const { name, parentId } = await req.json()
+  const category = await prisma.category.create({
+    data: { name, parentId: parentId || null },
+  })
   return NextResponse.json(category)
 }

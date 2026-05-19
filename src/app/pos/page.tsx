@@ -23,7 +23,6 @@ export default function POSPage() {
   const [services, setServices] = useState<Service[]>([])
   const [cart, setCart] = useState<CartItem[]>([])
   const [search, setSearch] = useState('')
-  const [selectedParent, setSelectedParent] = useState<string>('all')
   const [payMethod, setPayMethod] = useState('cash')
   const [payAmount, setPayAmount] = useState('')
   const [user, setUser] = useState<{ name: string; role: string } | null>(null)
@@ -79,38 +78,41 @@ export default function POSPage() {
   }, [payMethod, qrisUrl])
 
   const total = cart.reduce((s, i) => s + i.subtotal, 0)
-  const filtered = services.filter(s =>
-    s.name.toLowerCase().includes(search.toLowerCase())
-  ).filter(s => {
-    if (selectedParent === 'all') return true
-    const cat = s.category
-    if (!cat) return false
-    // Service langsung di parent
-    if (cat.id === selectedParent && !cat.parentId) return true
-    // Service di child dari parent
-    if (cat.parentId === selectedParent) return true
-    return false
-  })
 
-  // Group filtered services by subcategory
-  const grouped = filtered.reduce<Record<string, Service[]>>((acc, svc) => {
-    const groupName = svc.category?.parentId ? svc.category.name : '_direct'
-    if (!acc[groupName]) acc[groupName] = []
-    acc[groupName].push(svc)
+  // Expandable parent categories
+  const [expandedParents, setExpandedParents] = useState<Set<string>>(new Set())
+
+  function toggleParent(id: string) {
+    setExpandedParents(prev => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }
+
+  // Build category tree from services
+  const categoryTree = services.reduce<Record<string, { name: string; children: Record<string, { name: string; services: Service[] }>; directServices: Service[] }>>((acc, svc) => {
+    const cat = svc.category
+    if (!cat) return acc
+
+    if (cat.parentId && cat.parent) {
+      // Service under a child category
+      const parentId = cat.parent.id
+      if (!acc[parentId]) acc[parentId] = { name: cat.parent.name, children: {}, directServices: [] }
+      if (!acc[parentId].children[cat.id]) acc[parentId].children[cat.id] = { name: cat.name, services: [] }
+      acc[parentId].children[cat.id].services.push(svc)
+    } else if (cat.id) {
+      // Service directly under parent (no subcategory)
+      if (!acc[cat.id]) acc[cat.id] = { name: cat.name, children: {}, directServices: [] }
+      acc[cat.id].directServices.push(svc)
+    }
     return acc
   }, {})
 
-  // Get parent categories for tabs
-  const parentCategories = services.reduce<{ id: string; name: string }[]>((acc, svc) => {
-    const cat = svc.category
-    if (!cat) return acc
-    const parentId = cat.parentId ? cat.parent?.id : cat.id
-    const parentName = cat.parentId ? cat.parent?.name : cat.name
-    if (parentId && parentName && !acc.find(p => p.id === parentId)) {
-      acc.push({ id: parentId, name: parentName })
-    }
-    return acc
-  }, []).sort((a, b) => a.name.localeCompare(b.name))
+  // Filter by search
+  const searchLower = search.toLowerCase()
+  const hasSearch = search.length > 0
 
   function getDiscountForService(svc: Service): number {
     let totalDiscount = 0
@@ -253,51 +255,110 @@ export default function POSPage() {
             onChange={e => setSearch(e.target.value)}
             className="w-full px-4 py-2.5 border border-gray-200 rounded-xl mb-3 text-gray-900 bg-white text-sm focus:outline-none focus:border-gray-400 transition" />
 
-          {/* Parent category tabs */}
-          <div className="flex gap-2 mb-3 overflow-x-auto pb-1">
-            <button onClick={() => setSelectedParent('all')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition ${selectedParent === 'all' ? 'bg-gray-800 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}>Semua</button>
-            {parentCategories.map(cat => (
-              <button key={cat.id} onClick={() => setSelectedParent(cat.id)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition ${selectedParent === cat.id ? 'bg-gray-800 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}>{cat.name}</button>
-            ))}
-          </div>
-
           <div className="flex-1 md:bg-[url('/bg.jpeg')] md:bg-contain md:bg-top md:bg-no-repeat rounded-lg p-3">
             {!discountsLoaded ? (
               <div className="flex items-center justify-center h-32">
                 <p className="text-gray-400 text-sm">Memuat data...</p>
               </div>
+            ) : hasSearch ? (
+              /* Search mode: flat grid */
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                {services.filter(s => s.name.toLowerCase().includes(searchLower)).map(svc => (
+                  <button key={svc.id} onClick={() => addToCart(svc)}
+                    className="bg-white/75 backdrop-blur-sm p-4 rounded-2xl shadow-md hover:shadow-lg hover:bg-white/90 transition-all duration-200 text-left border border-white/50 relative">
+                    {getDiscountForService(svc) > 0 && (
+                      <span className="absolute top-2 right-2 bg-red-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-lg">-{getDiscountForService(svc)}%</span>
+                    )}
+                    <p className="font-bold text-gray-900 text-sm">{svc.name}</p>
+                    <p className="text-xs text-gray-500 mt-0.5">{svc.category?.name}</p>
+                    {getDiscountForService(svc) > 0 ? (
+                      <div className="mt-1">
+                        <p className="text-gray-400 line-through text-xs">{fmt(svc.price)}</p>
+                        <p className="text-red-600 font-bold text-base">{fmt(Math.round(svc.price * (1 - getDiscountForService(svc) / 100)))}</p>
+                      </div>
+                    ) : (
+                      <p className="text-gray-800 font-bold mt-1 text-base">{fmt(svc.price)}</p>
+                    )}
+                  </button>
+                ))}
+              </div>
             ) : (
-            <div className="space-y-4">
-              {Object.entries(grouped).sort(([a], [b]) => a === '_direct' ? 1 : b === '_direct' ? -1 : a.localeCompare(b)).map(([groupName, items]) => (
-                <div key={groupName}>
-                  {groupName !== '_direct' && (
-                    <h3 className="text-sm font-bold text-gray-700 mb-2 bg-white/60 backdrop-blur-sm px-3 py-1 rounded-lg inline-block">{groupName}</h3>
-                  )}
-                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                    {items.map(svc => (
-                      <button key={svc.id} onClick={() => addToCart(svc)}
-                        className="bg-white/75 backdrop-blur-sm p-4 md:p-5 rounded-2xl shadow-md hover:shadow-lg hover:bg-white/90 transition-all duration-200 text-left border border-white/50 relative">
-                        {getDiscountForService(svc) > 0 && (
-                          <span className="absolute top-2 right-2 bg-red-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-lg">-{getDiscountForService(svc)}%</span>
-                        )}
-                        <p className="font-bold text-gray-900 text-sm md:text-base">{svc.name}</p>
-                        <p className="text-xs md:text-sm text-gray-500 mt-0.5">{svc.category?.name}</p>
-                        {getDiscountForService(svc) > 0 ? (
-                          <div className="mt-1 md:mt-2">
-                            <p className="text-gray-400 line-through text-xs">{fmt(svc.price)}</p>
-                            <p className="text-red-600 font-bold text-base md:text-lg">{fmt(Math.round(svc.price * (1 - getDiscountForService(svc) / 100)))}</p>
-                          </div>
-                        ) : (
-                          <p className="text-gray-800 font-bold mt-1 md:mt-2 text-base md:text-lg">{fmt(svc.price)}</p>
-                        )}
+              /* Tree view: parent cards with expandable children */
+              <div className="space-y-3">
+                {Object.entries(categoryTree).sort(([,a], [,b]) => a.name.localeCompare(b.name)).map(([parentId, parent]) => {
+                  const isExpanded = expandedParents.has(parentId)
+                  const childEntries = Object.entries(parent.children).sort(([,a], [,b]) => a.name.localeCompare(b.name))
+                  const hasContent = childEntries.length > 0 || parent.directServices.length > 0
+
+                  return (
+                    <div key={parentId} className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-md border border-white/50 overflow-hidden">
+                      {/* Parent header — click to expand */}
+                      <button onClick={() => toggleParent(parentId)}
+                        className="w-full flex items-center justify-between px-4 py-3 hover:bg-gray-50/50 transition">
+                        <span className="font-bold text-gray-800 text-sm md:text-base">📁 {parent.name}</span>
+                        <span className="text-gray-400 text-lg">{isExpanded ? '▼' : '▶'}</span>
                       </button>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
+
+                      {/* Expanded content */}
+                      {isExpanded && hasContent && (
+                        <div className="px-4 pb-4 space-y-3">
+                          {/* Child categories with their services */}
+                          {childEntries.map(([childId, child]) => (
+                            <div key={childId}>
+                              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5 pl-1">{child.name}</p>
+                              <div className="space-y-1">
+                                {child.services.map(svc => (
+                                  <button key={svc.id} onClick={() => addToCart(svc)}
+                                    className="w-full flex items-center justify-between px-3 py-2 bg-gray-50 hover:bg-gray-100 rounded-xl transition text-left relative">
+                                    {getDiscountForService(svc) > 0 && (
+                                      <span className="absolute top-1 right-1 bg-red-500 text-white text-[10px] font-bold px-1 py-0.5 rounded">-{getDiscountForService(svc)}%</span>
+                                    )}
+                                    <span className="text-sm text-gray-800">{svc.name}</span>
+                                    {getDiscountForService(svc) > 0 ? (
+                                      <div className="text-right">
+                                        <span className="text-xs text-gray-400 line-through mr-1">{fmt(svc.price)}</span>
+                                        <span className="text-sm font-bold text-red-600">{fmt(Math.round(svc.price * (1 - getDiscountForService(svc) / 100)))}</span>
+                                      </div>
+                                    ) : (
+                                      <span className="text-sm font-bold text-gray-800">{fmt(svc.price)}</span>
+                                    )}
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+                          ))}
+
+                          {/* Direct services (no subcategory) */}
+                          {parent.directServices.length > 0 && (
+                            <div>
+                              {childEntries.length > 0 && <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5 pl-1">Lainnya</p>}
+                              <div className="space-y-1">
+                                {parent.directServices.map(svc => (
+                                  <button key={svc.id} onClick={() => addToCart(svc)}
+                                    className="w-full flex items-center justify-between px-3 py-2 bg-gray-50 hover:bg-gray-100 rounded-xl transition text-left relative">
+                                    {getDiscountForService(svc) > 0 && (
+                                      <span className="absolute top-1 right-1 bg-red-500 text-white text-[10px] font-bold px-1 py-0.5 rounded">-{getDiscountForService(svc)}%</span>
+                                    )}
+                                    <span className="text-sm text-gray-800">{svc.name}</span>
+                                    {getDiscountForService(svc) > 0 ? (
+                                      <div className="text-right">
+                                        <span className="text-xs text-gray-400 line-through mr-1">{fmt(svc.price)}</span>
+                                        <span className="text-sm font-bold text-red-600">{fmt(Math.round(svc.price * (1 - getDiscountForService(svc) / 100)))}</span>
+                                      </div>
+                                    ) : (
+                                      <span className="text-sm font-bold text-gray-800">{fmt(svc.price)}</span>
+                                    )}
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  )
+                })}
+              </div>
             )}
           </div>
         </div>

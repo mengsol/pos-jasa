@@ -196,9 +196,11 @@ export default function TransaksiPage() {
                       <span>{fmt(item.subtotal)}</span>
                     </div>
                   ))}
-                  <div className="border-t border-dashed border-gray-200 pt-2 mt-2 flex justify-between text-xs text-gray-400">
-                    <span>Bayar: {fmt(t.payments.reduce((s, p) => s + p.amount, 0))}</span>
-                    <span>Kembali: {fmt(t.payments.reduce((s, p) => s + p.amount, 0) - t.totalAmount)}</span>
+                  <div className="border-t border-dashed border-gray-200 pt-2 mt-2 flex flex-col md:flex-row md:justify-between text-xs text-gray-400 gap-0.5">
+                    <span>Bayar: {t.payments.map(p => `${p.method.toUpperCase()} ${fmt(p.amount)}`).join(', ')}</span>
+                    {t.payments.reduce((s, p) => s + p.amount, 0) > t.totalAmount && (
+                      <span className="text-green-600 font-medium">Kembalian: {fmt(t.payments.reduce((s, p) => s + p.amount, 0) - t.totalAmount)}</span>
+                    )}
                   </div>
                   {t.status === 'cancelled' && (
                     <div className="border-t border-red-200 pt-2 mt-2 space-y-0.5">

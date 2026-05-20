@@ -204,6 +204,9 @@ export default function PembukuanPage() {
                             {t.payments.map((p, i) => (
                               <span key={i} className="text-gray-700">{p.method.toUpperCase()} {fmt(p.amount)} </span>
                             ))}
+                            {t.payments[0]?.method === 'cash' && t.payments.reduce((s, p) => s + p.amount, 0) > t.totalAmount && (
+                              <span className="text-green-600 font-medium ml-2">| Kembalian: {fmt(t.payments.reduce((s, p) => s + p.amount, 0) - t.totalAmount)}</span>
+                            )}
                           </div>
                           {t.status === 'cancelled' && (
                             <div className="border-t border-red-200 pt-2 grid grid-cols-2 gap-x-8 gap-y-1 text-xs">

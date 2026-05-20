@@ -239,7 +239,7 @@ export default function AdminPage() {
           
           {/* Mobile: card view */}
           <div className="md:hidden space-y-2">
-            {services.map(svc => (
+            {[...services].sort((a, b) => (a.category?.name || '').localeCompare(b.category?.name || '')).map(svc => (
               <div key={svc.id} className="flex items-center justify-between bg-gray-50 p-3 rounded-xl">
                 <div>
                   <p className="text-sm font-medium text-gray-800">{svc.name}</p>
@@ -262,7 +262,7 @@ export default function AdminPage() {
                 </tr>
               </thead>
               <tbody>
-                {services.map(svc => (
+                {[...services].sort((a, b) => (a.category?.name || '').localeCompare(b.category?.name || '')).map(svc => (
                   <tr key={svc.id} className="border-b border-gray-100 hover:bg-gray-50 transition">
                     <td className="py-3 text-gray-800 font-medium">{svc.name}</td>
                     <td className="text-gray-500">{svc.category?.name || '-'}</td>

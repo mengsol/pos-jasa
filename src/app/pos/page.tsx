@@ -138,10 +138,21 @@ export default function POSPage() {
     // Check item-level discount
     const itemDiscount = discounts.find(d => d.type === 'service' && d.targetId === svc.id)
     if (itemDiscount) totalDiscount += itemDiscount.discountPercent
-    // Check category-level discount (stacks with item)
-    if (svc.categoryId) {
-      const catDiscount = discounts.find(d => d.type === 'category' && d.targetId === svc.categoryId)
+    // Check category-level discount — walk up the hierarchy (child → parent → grandparent)
+    if (svc.category) {
+      // Direct category (child/grandchild level)
+      const catDiscount = discounts.find(d => d.type === 'category' && d.targetId === svc.category!.id)
       if (catDiscount) totalDiscount += catDiscount.discountPercent
+      // Parent category
+      if (svc.category.parent) {
+        const parentDiscount = discounts.find(d => d.type === 'category' && d.targetId === svc.category!.parent!.id)
+        if (parentDiscount) totalDiscount += parentDiscount.discountPercent
+        // Grandparent category
+        if (svc.category.parent.parent) {
+          const grandparentDiscount = discounts.find(d => d.type === 'category' && d.targetId === svc.category!.parent!.parent!.id)
+          if (grandparentDiscount) totalDiscount += grandparentDiscount.discountPercent
+        }
+      }
     }
     return Math.min(totalDiscount, 100) // cap at 100%
   }

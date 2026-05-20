@@ -1,14 +1,48 @@
 'use client'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 
 export default function ReadmePage() {
+  const [user, setUser] = useState<{ name: string; role: string } | null>(null)
+  const [showMenu, setShowMenu] = useState(false)
   const router = useRouter()
+
+  useEffect(() => {
+    fetch('/api/auth/me').then(r => {
+      if (!r.ok) { router.push('/login'); return }
+      return r.json()
+    }).then(d => d && setUser(d))
+  }, [router])
 
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="bg-gray-800 text-white px-4 py-3 flex justify-between items-center">
         <h1 className="text-base md:text-lg font-bold tracking-wide">📖 Manual Book</h1>
-        <button onClick={() => router.push('/pos')} className="text-xs md:text-sm bg-gray-700 px-3 py-1.5 rounded-lg hover:bg-gray-600 transition">🏠 Main</button>
+        <div className="flex items-center gap-2 md:gap-3">
+          <span className="hidden md:inline text-sm text-gray-300">{user?.name} ({user?.role})</span>
+          <div className="relative">
+            <button onClick={() => setShowMenu(!showMenu)} className="text-xs md:text-sm bg-gray-700 px-3 py-1.5 rounded-lg hover:bg-gray-600 transition">☰ Menu</button>
+            {showMenu && (
+              <>
+                <div className="fixed inset-0 z-40" onClick={() => setShowMenu(false)} />
+                <div className="absolute right-0 top-full mt-1 bg-gray-800 border border-gray-700 rounded-xl shadow-xl min-w-[140px] py-1 z-50">
+                  <button onClick={() => { setShowMenu(false); router.push('/pos') }} className="w-full text-left text-sm px-4 py-2 hover:bg-gray-700 transition">🏠 Main</button>
+                  {user?.role === 'admin' && (
+                    <>
+                      <button onClick={() => { setShowMenu(false); router.push('/admin') }} className="w-full text-left text-sm px-4 py-2 hover:bg-gray-700 transition">⚙️ Admin</button>
+                      <button onClick={() => { setShowMenu(false); router.push('/admin/discounts') }} className="w-full text-left text-sm px-4 py-2 hover:bg-gray-700 transition">🏷️ Diskon</button>
+                      <button onClick={() => { setShowMenu(false); router.push('/users') }} className="w-full text-left text-sm px-4 py-2 hover:bg-gray-700 transition">👥 Users</button>
+                      <button onClick={() => { setShowMenu(false); router.push('/pembukuan') }} className="w-full text-left text-sm px-4 py-2 hover:bg-gray-700 transition">📊 Report</button>
+                    </>
+                  )}
+                  <button onClick={() => { setShowMenu(false); router.push('/transaksi') }} className="w-full text-left text-sm px-4 py-2 hover:bg-gray-700 transition">🧾 Transaksi</button>
+                  <div className="border-t border-gray-700 my-1" />
+                  <button onClick={async () => { await fetch('/api/auth/logout', { method: 'POST' }); router.push('/login') }} className="w-full text-left text-sm px-4 py-2 text-red-400 hover:bg-gray-700 transition">🚪 Logout</button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
       </div>
 
       <div className="max-w-3xl mx-auto p-4 md:p-6">

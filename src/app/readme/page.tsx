@@ -29,7 +29,7 @@ export default function ReadmePage() {
                   <button onClick={() => { setShowMenu(false); router.push('/pos') }} className="w-full text-left text-sm px-4 py-2 hover:bg-gray-700 transition">🏠 Main</button>
                   {user?.role === 'admin' && (
                     <>
-                      <button onClick={() => { setShowMenu(false); router.push('/admin') }} className="w-full text-left text-sm px-4 py-2 hover:bg-gray-700 transition">⚙️ Admin</button>
+                      <button onClick={() => { setShowMenu(false); router.push('/admin') }} className="w-full text-left text-sm px-4 py-2 hover:bg-gray-700 transition">⚙️ Master Jasa</button>
                       <button onClick={() => { setShowMenu(false); router.push('/admin/discounts') }} className="w-full text-left text-sm px-4 py-2 hover:bg-gray-700 transition">🏷️ Diskon</button>
                       <button onClick={() => { setShowMenu(false); router.push('/users') }} className="w-full text-left text-sm px-4 py-2 hover:bg-gray-700 transition">👥 Users</button>
                       <button onClick={() => { setShowMenu(false); router.push('/pembukuan') }} className="w-full text-left text-sm px-4 py-2 hover:bg-gray-700 transition">📊 Report</button>
@@ -118,7 +118,7 @@ export default function ReadmePage() {
             <h3 className="text-lg font-bold text-gray-800 mb-2">☰ Menu</h3>
             <p>Klik tombol <strong>☰ Menu</strong> di kanan atas untuk akses:</p>
             <ul className="list-disc pl-5 space-y-1 mt-1">
-              <li><strong>⚙️ Admin</strong> — Kelola jasa, kategori, QRIS (admin only)</li>
+              <li><strong>⚙️ Master Jasa</strong> — Kelola jasa, kategori, QRIS (admin only)</li>
               <li><strong>🏷️ Diskon</strong> — Kelola diskon (admin only)</li>
               <li><strong>👥 Users</strong> — Kelola user (admin only)</li>
               <li><strong>📊 Report</strong> — Laporan pendapatan (admin only)</li>
@@ -130,7 +130,7 @@ export default function ReadmePage() {
 
           {/* Admin - Master Jasa */}
           <section>
-            <h3 className="text-lg font-bold text-gray-800 mb-2">⚙️ Admin — Master Jasa</h3>
+            <h3 className="text-lg font-bold text-gray-800 mb-2">⚙️ Master Jasa</h3>
             <ul className="list-disc pl-5 space-y-1">
               <li><strong>Tambah Jasa:</strong> Isi nama, harga, pilih kategori → Simpan</li>
               <li><strong>Edit Jasa:</strong> Klik Edit di daftar → ubah → Update</li>

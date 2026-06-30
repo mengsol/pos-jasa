@@ -378,8 +378,15 @@ export default function POSPage() {
             onChange={e => setSearch(e.target.value)}
             className="w-full px-4 py-2.5 input-elegant mb-3 text-gray-900 text-sm" />
 
-          <div className="flex-1 md:bg-[image:var(--pos-logo)] md:bg-contain md:bg-top md:bg-no-repeat rounded-lg p-3"
-            style={{ ['--pos-logo']: `url("${posLogo || '/bg.jpeg'}")` } as React.CSSProperties}>
+          <div
+            className="flex-1 rounded-2xl p-3"
+            style={{
+              backgroundImage: `linear-gradient(rgba(250,245,242,0.93), rgba(250,245,242,0.96)), url("${posLogo || '/bg.jpeg'}")`,
+              backgroundRepeat: 'no-repeat, no-repeat',
+              backgroundPosition: 'center, center 28px',
+              backgroundSize: 'cover, min(70%, 360px)',
+            }}
+          >
             {!discountsLoaded ? (
               <div className="flex items-center justify-center h-32">
                 <p className="text-gray-400 text-sm">Memuat data...</p>

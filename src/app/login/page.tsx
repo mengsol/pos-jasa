@@ -32,63 +32,67 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen min-h-dvh flex items-center justify-center bg-[url('/bg.jpeg')] bg-contain bg-center bg-fixed bg-no-repeat bg-gray-900 px-4 py-8">
+    <div
+      className="min-h-screen min-h-dvh flex items-center justify-center px-4 py-8"
+      style={{
+        backgroundImage: `linear-gradient(rgba(250,245,242,0.80), rgba(250,245,242,0.88)), url("/bg.jpeg")`,
+        backgroundRepeat: 'no-repeat, no-repeat',
+        backgroundPosition: 'center, center',
+        backgroundSize: 'cover, min(680px, 82%)',
+      }}
+    >
       <div className="w-full max-w-sm md:max-w-md">
         {/* Logo area */}
         <div className="text-center mb-6 md:mb-8">
-          <h1 className="text-2xl md:text-3xl font-light tracking-[0.3em] text-white/90 uppercase">Ayunda</h1>
-          <p className="text-xs md:text-sm tracking-[0.2em] text-white/60 mt-1">Beauty Studio</p>
+          <h1 className="text-2xl md:text-3xl font-light tracking-[0.3em] text-stone-700 uppercase">Ayunda</h1>
+          <p className="text-xs md:text-sm tracking-[0.2em] text-stone-500 mt-1">Beauty Studio</p>
         </div>
 
         {/* Login card */}
-        <div className="bg-white/10 backdrop-blur-xl p-6 md:p-8 rounded-3xl shadow-2xl border border-white/20">
-          <h2 className="text-base md:text-lg font-medium text-white/90 text-center mb-5 md:mb-6">Selamat Datang</h2>
-          
+        <div className="card-elegant p-6 md:p-8 rounded-3xl">
+          <h2 className="text-base md:text-lg font-semibold text-stone-700 text-center mb-5 md:mb-6">Selamat Datang</h2>
+
           <form onSubmit={handleLogin} className="space-y-5">
             <div>
-              <label className="block text-xs font-medium text-white/60 mb-2 uppercase tracking-wider">Username</label>
+              <label className="block text-xs font-medium text-stone-500 mb-2 uppercase tracking-wider">Username</label>
               <input
                 type="text"
                 value={username}
                 onChange={e => setUsername(e.target.value)}
-                className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/30
-                           focus:outline-none focus:border-white/50 focus:bg-white/15 transition-all duration-200"
+                className="w-full px-4 py-3 input-elegant text-gray-900 placeholder-stone-400"
                 placeholder="Masukkan username"
                 required
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-white/60 mb-2 uppercase tracking-wider">Password</label>
+              <label className="block text-xs font-medium text-stone-500 mb-2 uppercase tracking-wider">Password</label>
               <input
                 type="password"
                 value={password}
                 onChange={e => setPassword(e.target.value)}
-                className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/30
-                           focus:outline-none focus:border-white/50 focus:bg-white/15 transition-all duration-200"
+                className="w-full px-4 py-3 input-elegant text-gray-900 placeholder-stone-400"
                 placeholder="Masukkan password"
                 required
               />
             </div>
 
             {error && (
-              <div className="bg-red-500/20 border border-red-400/30 rounded-xl px-4 py-2">
-                <p className="text-red-300 text-sm text-center">{error}</p>
+              <div className="bg-rose-50 border border-rose-200 rounded-xl px-4 py-2">
+                <p className="text-rose-600 text-sm text-center">{error}</p>
               </div>
             )}
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-white text-gray-900 py-3 rounded-xl font-semibold
-                         hover:bg-white/90 active:scale-[0.98] disabled:opacity-50
-                         transition-all duration-200 text-sm uppercase tracking-wider mt-2"
+              className="w-full btn-gold py-3 rounded-xl active:scale-[0.98] disabled:opacity-50 text-sm uppercase tracking-wider mt-2"
             >
               {loading ? 'Memproses...' : 'Masuk'}
             </button>
           </form>
         </div>
 
-        <p className="text-center text-white/30 text-xs mt-6">© 2026 Ayunda Beauty Studio</p>
+        <p className="text-center text-stone-400 text-xs mt-6">© 2026 Ayunda Beauty Studio</p>
       </div>
     </div>
   )

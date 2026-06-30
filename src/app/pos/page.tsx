@@ -381,10 +381,10 @@ export default function POSPage() {
           <div
             className="flex-1 rounded-2xl p-3"
             style={{
-              backgroundImage: `linear-gradient(rgba(250,245,242,0.70), rgba(250,245,242,0.74)), url("${posLogo || '/bg.jpeg'}")`,
+              backgroundImage: `linear-gradient(rgba(250,245,242,0.72), rgba(250,245,242,0.76)), url("${posLogo || '/bg.jpeg'}")`,
               backgroundRepeat: 'no-repeat, no-repeat',
-              backgroundPosition: 'center, center',
-              backgroundSize: 'cover, min(88%, 620px)',
+              backgroundPosition: 'center, center top',
+              backgroundSize: 'cover, contain',
             }}
           >
             {!discountsLoaded ? (

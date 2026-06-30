@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { isAdminRole } from '@/lib/roles'
 
 interface Payment { method: string; amount: number }
 interface Transaction {
@@ -48,7 +49,7 @@ export default function TransaksiPage() {
       return
     }
     // Only require admin credentials if user is kasir
-    if (user?.role !== 'admin' && (!adminUser || !adminPass)) {
+    if (!isAdminRole(user?.role) && (!adminUser || !adminPass)) {
       setCancelError('Username dan password admin harus diisi')
       return
     }
@@ -109,7 +110,7 @@ export default function TransaksiPage() {
                 <div className="fixed inset-0 z-40" onClick={() => setShowMenu(false)} />
                 <div className="absolute right-0 top-full mt-1 bg-gray-800 border border-gray-700 rounded-xl shadow-xl min-w-[140px] py-1 z-50">
                   <button onClick={() => { setShowMenu(false); router.push('/pos') }} className="w-full text-left text-sm px-4 py-2 hover:bg-gray-700 transition">🏠 Main</button>
-                  {user?.role === 'admin' && (
+                  {isAdminRole(user?.role) && (
                     <>
                       <button onClick={() => { setShowMenu(false); router.push('/admin') }} className="w-full text-left text-sm px-4 py-2 hover:bg-gray-700 transition">⚙️ Master Jasa</button>
                       <button onClick={() => { setShowMenu(false); router.push('/admin/discounts') }} className="w-full text-left text-sm px-4 py-2 hover:bg-gray-700 transition">🏷️ Diskon</button>
@@ -259,7 +260,7 @@ export default function TransaksiPage() {
               </div>
 
               {/* Admin approval — only for kasir */}
-              {user?.role !== 'admin' && (
+              {!isAdminRole(user?.role) && (
                 <div>
                   <p className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">Persetujuan Admin</p>
                   <input

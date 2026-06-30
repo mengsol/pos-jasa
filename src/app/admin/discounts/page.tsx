@@ -26,7 +26,7 @@ export default function DiscountsPage() {
     fetch('/api/auth/me').then(r => {
       if (!r.ok) { router.push('/login'); return }
       return r.json()
-    }).then(d => { if (d && d.role !== 'admin') router.push('/pos') })
+    }).then(d => { if (d && d.role !== 'admin' && d.role !== 'superadmin') router.push('/pos') })
     loadData()
   }, [router])
 

@@ -2,10 +2,11 @@ import { NextRequest, NextResponse } from 'next/server'
 import bcrypt from 'bcryptjs'
 import { prisma } from '@/lib/prisma'
 import { getSession } from '@/lib/auth'
+import { isAdminRole } from '@/lib/roles'
 
 export async function GET() {
   const user = await getSession()
-  if (!user || user.role !== 'admin') {
+  if (!user || !isAdminRole(user.role)) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
   }
 
@@ -27,7 +28,7 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   const user = await getSession()
-  if (!user || user.role !== 'admin') {
+  if (!user || !isAdminRole(user.role)) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
   }
 
@@ -39,6 +40,7 @@ export async function POST(req: NextRequest) {
       { status: 400 },
     )
   }
+  // Only admin & kasir can be created — superadmin is fixed (single, seeded)
   if (role && !['admin', 'kasir'].includes(role)) {
     return NextResponse.json({ error: 'Invalid role' }, { status: 400 })
   }

@@ -2,19 +2,30 @@ import { NextRequest, NextResponse } from 'next/server'
 import bcrypt from 'bcryptjs'
 import { prisma } from '@/lib/prisma'
 import { getSession } from '@/lib/auth'
+import { isAdminRole } from '@/lib/roles'
 
 export async function PUT(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
   const session = await getSession()
-  if (!session || session.role !== 'admin') {
+  if (!session || !isAdminRole(session.role)) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
   }
 
   const { id } = await params
   const { username, password, name, role, outletId } = await req.json()
 
+  // The superadmin account is locked — cannot be edited by anyone
+  const target = await prisma.user.findUnique({ where: { id } })
+  if (!target) {
+    return NextResponse.json({ error: 'User tidak ditemukan' }, { status: 404 })
+  }
+  if (target.role === 'superadmin') {
+    return NextResponse.json({ error: 'Akun Super Admin tidak dapat diubah' }, { status: 403 })
+  }
+
+  // Only admin & kasir are valid targets — cannot promote anyone to superadmin
   if (role && !['admin', 'kasir'].includes(role)) {
     return NextResponse.json({ error: 'Invalid role' }, { status: 400 })
   }
@@ -67,11 +78,17 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> },
 ) {
   const session = await getSession()
-  if (!session || session.role !== 'admin') {
+  if (!session || !isAdminRole(session.role)) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
   }
 
   const { id } = await params
+
+  // The superadmin account is locked — cannot be deleted
+  const target = await prisma.user.findUnique({ where: { id } })
+  if (target?.role === 'superadmin') {
+    return NextResponse.json({ error: 'Akun Super Admin tidak dapat dihapus' }, { status: 403 })
+  }
 
   // prevent self-delete
   if (id === session.id) {

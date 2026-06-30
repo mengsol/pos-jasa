@@ -66,7 +66,7 @@ export default function UsersPage() {
       })
       .then((d) => {
         if (!d) return
-        if (d.role !== 'admin') {
+        if (d.role !== 'admin' && d.role !== 'superadmin') {
           router.push('/pos')
           return
         }
@@ -289,13 +289,17 @@ export default function UsersPage() {
                     {u.username}
                     {u.id === session?.id && <span className="ml-1 text-xs text-gray-400">(you)</span>}
                   </p>
-                  <p className="text-xs text-gray-500">{u.name} · <span className={u.role === 'admin' ? 'text-purple-600' : 'text-gray-500'}>{u.role}</span></p>
+                  <p className="text-xs text-gray-500">{u.name} · <span className={u.role === 'superadmin' ? 'text-amber-600 font-semibold' : u.role === 'admin' ? 'text-purple-600' : 'text-gray-500'}>{u.role}</span></p>
                 </div>
+                {u.role === 'superadmin' ? (
+                  <span className="text-xs text-amber-600 font-medium">🔒 Terkunci</span>
+                ) : (
                 <div className="flex gap-1.5">
                   <button onClick={() => handleEdit(u)} className="text-xs bg-gray-200 text-gray-700 px-2.5 py-1.5 rounded-lg hover:bg-gray-300 transition">Edit</button>
                   <button onClick={() => handleDelete(u)} disabled={u.id === session?.id}
                     className="text-xs bg-red-50 text-red-600 px-2.5 py-1.5 rounded-lg hover:bg-red-100 transition disabled:opacity-40">Del</button>
                 </div>
+                )}
               </div>
             ))}
             {users.length === 0 && <p className="text-center text-gray-400 py-4 text-sm">Belum ada user</p>}
@@ -325,7 +329,7 @@ export default function UsersPage() {
                     <td className="py-3 px-2 text-gray-700">{u.name}</td>
                     <td className="py-3 px-2">
                       <span className={`inline-block px-2.5 py-0.5 text-xs rounded-full font-medium ${
-                        u.role === 'admin' ? 'bg-purple-50 text-purple-700' : 'bg-gray-100 text-gray-600'
+                        u.role === 'superadmin' ? 'bg-amber-100 text-amber-700' : u.role === 'admin' ? 'bg-purple-50 text-purple-700' : 'bg-gray-100 text-gray-600'
                       }`}>
                         {u.role}
                       </span>
@@ -334,10 +338,16 @@ export default function UsersPage() {
                       {new Date(u.createdAt).toLocaleDateString('id-ID')}
                     </td>
                     <td className="py-3 px-2 text-right space-x-1.5">
-                      <button onClick={() => handleEdit(u)}
-                        className="text-xs bg-gray-100 text-gray-700 px-2.5 py-1.5 rounded-lg hover:bg-gray-200 transition">Edit</button>
-                      <button onClick={() => handleDelete(u)} disabled={u.id === session?.id}
-                        className="text-xs bg-red-50 text-red-600 px-2.5 py-1.5 rounded-lg hover:bg-red-100 transition disabled:opacity-40 disabled:cursor-not-allowed">Delete</button>
+                      {u.role === 'superadmin' ? (
+                        <span className="text-xs text-amber-600 font-medium">🔒 Terkunci</span>
+                      ) : (
+                        <>
+                          <button onClick={() => handleEdit(u)}
+                            className="text-xs bg-gray-100 text-gray-700 px-2.5 py-1.5 rounded-lg hover:bg-gray-200 transition">Edit</button>
+                          <button onClick={() => handleDelete(u)} disabled={u.id === session?.id}
+                            className="text-xs bg-red-50 text-red-600 px-2.5 py-1.5 rounded-lg hover:bg-red-100 transition disabled:opacity-40 disabled:cursor-not-allowed">Delete</button>
+                        </>
+                      )}
                     </td>
                   </tr>
                 ))}

@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { isAdminRole } from '@/lib/roles'
 
 export default function ReadmePage() {
   const [user, setUser] = useState<{ name: string; role: string } | null>(null)
@@ -27,7 +28,7 @@ export default function ReadmePage() {
                 <div className="fixed inset-0 z-40" onClick={() => setShowMenu(false)} />
                 <div className="absolute right-0 top-full mt-1 bg-gray-800 border border-gray-700 rounded-xl shadow-xl min-w-[140px] py-1 z-50">
                   <button onClick={() => { setShowMenu(false); router.push('/pos') }} className="w-full text-left text-sm px-4 py-2 hover:bg-gray-700 transition">🏠 Main</button>
-                  {user?.role === 'admin' && (
+                  {isAdminRole(user?.role) && (
                     <>
                       <button onClick={() => { setShowMenu(false); router.push('/admin') }} className="w-full text-left text-sm px-4 py-2 hover:bg-gray-700 transition">⚙️ Master Jasa</button>
                       <button onClick={() => { setShowMenu(false); router.push('/admin/discounts') }} className="w-full text-left text-sm px-4 py-2 hover:bg-gray-700 transition">🏷️ Diskon</button>
@@ -62,7 +63,7 @@ export default function ReadmePage() {
             <ul className="list-disc pl-5 space-y-1">
               <li>Buka website, masukkan <strong>Username</strong> dan <strong>Password</strong></li>
               <li>Klik <strong>Masuk</strong></li>
-              <li>Ada 2 role: <strong>Admin</strong> (akses penuh) dan <strong>Kasir</strong> (transaksi saja)</li>
+              <li>Ada 3 role: <strong>Super Admin</strong> (akses penuh + atur branding), <strong>Admin</strong> (akses penuh kecuali branding), dan <strong>Kasir</strong> (transaksi saja)</li>
             </ul>
           </section>
 
@@ -210,6 +211,7 @@ export default function ReadmePage() {
               <li><strong>Edit User:</strong> Klik Edit → ubah data → Update</li>
               <li><strong>Delete User:</strong> Klik Delete (tidak bisa hapus akun sendiri)</li>
               <li><strong>Role:</strong> Admin (akses penuh) atau Kasir (transaksi + transaksi history)</li>
+              <li><strong>🔒 Super Admin:</strong> akun khusus (hanya 1) yang bisa atur branding. Terkunci — tidak bisa diedit/dihapus dan tidak bisa dibuat dari sini</li>
             </ul>
           </section>
 

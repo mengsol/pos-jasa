@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { isSuperadminRole } from '@/lib/roles'
 
 interface Service { id: string; name: string; price: number; categoryId: string | null; category?: { name: string } | null }
 interface Category { id: string; name: string; parentId?: string | null; children?: Category[] }
@@ -27,7 +28,7 @@ export default function AdminPage() {
       if (!r.ok) { router.push('/login'); return }
       return r.json()
     }).then(d => {
-      if (d && d.role !== 'admin') { router.push('/pos'); return }
+      if (d && d.role !== 'admin' && d.role !== 'superadmin') { router.push('/pos'); return }
       setUser(d)
     })
     loadData()
@@ -263,7 +264,8 @@ export default function AdminPage() {
 
         {/* Daftar Jasa */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 md:col-span-2">
-          {/* Branding / Tampilan Settings */}
+          {/* Branding / Tampilan Settings — Super Admin only */}
+          {isSuperadminRole(user?.role) && (
           <div className="mb-6 p-4 bg-gray-50 rounded-xl border border-gray-200">
             <h3 className="font-bold text-gray-800 mb-2 text-sm">Tampilan / Branding</h3>
             <form onSubmit={handleSaveShopName} className="flex flex-col md:flex-row gap-2">
@@ -294,6 +296,7 @@ export default function AdminPage() {
               <p className="text-xs text-gray-500 mt-2">Gambar tampil di tengah halaman POS (desktop). Format gambar, maksimal 1.5 MB.</p>
             </div>
           </div>
+          )}
 
           {/* QRIS Settings */}
           <div className="mb-6 p-4 bg-gray-50 rounded-xl border border-gray-200">

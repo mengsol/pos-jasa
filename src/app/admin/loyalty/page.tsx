@@ -24,7 +24,7 @@ export default function LoyaltyConfigPage() {
       if (!r.ok) { router.push('/login'); return }
       return r.json()
     }).then(d => {
-      if (d && d.role !== 'admin') { router.push('/pos'); return }
+      if (d && d.role !== 'admin' && d.role !== 'superadmin') { router.push('/pos'); return }
       setUser(d)
     })
     fetch('/api/loyalty/config').then(r => r.json()).then(setConfig)

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { getSession } from '@/lib/auth'
+import { isAdminRole } from '@/lib/roles'
 import bcrypt from 'bcryptjs'
 
 export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -19,8 +20,8 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     return NextResponse.json({ error: 'Transaksi sudah di-cancel sebelumnya' }, { status: 400 })
   }
 
-  // If session user is admin — no need for admin approval input
-  if (session.role === 'admin') {
+  // If session user is admin/superadmin — no need for admin approval input
+  if (isAdminRole(session.role)) {
     const updated = await prisma.transaction.update({
       where: { id },
       data: {
@@ -40,7 +41,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
   }
 
   const admin = await prisma.user.findUnique({ where: { username: adminUsername } })
-  if (!admin || admin.role !== 'admin') {
+  if (!admin || !isAdminRole(admin.role)) {
     return NextResponse.json({ error: 'User admin tidak ditemukan' }, { status: 403 })
   }
 

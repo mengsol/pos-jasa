@@ -25,7 +25,7 @@ export default function PembukuanPage() {
       if (!r.ok) { router.push('/login'); return }
       return r.json()
     }).then(d => {
-      if (d && d.role !== 'admin') router.push('/pos')
+      if (d && d.role !== 'admin' && d.role !== 'superadmin') router.push('/pos')
     })
   }, [router])
 

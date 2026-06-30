@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { getSession } from '@/lib/auth'
+import { isAdminRole } from '@/lib/roles'
 
 // GET /api/loyalty/config
 export async function GET() {
@@ -20,7 +21,7 @@ export async function GET() {
 // PUT /api/loyalty/config
 export async function PUT(req: NextRequest) {
   const user = await getSession()
-  if (!user || user.role !== 'admin') {
+  if (!user || !isAdminRole(user.role)) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
   }
 

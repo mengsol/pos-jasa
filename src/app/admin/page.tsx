@@ -21,6 +21,7 @@ export default function AdminPage() {
   const [qrisMerchant, setQrisMerchant] = useState('')
   const [shopName, setShopName] = useState('')
   const [posLogo, setPosLogo] = useState('')
+  const [kasirTimeout, setKasirTimeout] = useState('')
   const router = useRouter()
 
   useEffect(() => {
@@ -36,6 +37,7 @@ export default function AdminPage() {
       if (s.qris_merchant_id) setQrisMerchant(s.qris_merchant_id)
       if (s.shop_name) setShopName(s.shop_name)
       if (s.pos_logo_image) setPosLogo(s.pos_logo_image)
+      if (s.kasir_timeout_minutes) setKasirTimeout(s.kasir_timeout_minutes)
     })
   }, [router])
 
@@ -112,6 +114,14 @@ export default function AdminPage() {
     alert('Nama studio tersimpan!')
   }
 
+  async function handleSaveTimeout(e: React.FormEvent) {
+    e.preventDefault()
+    const mins = parseInt(kasirTimeout || '0', 10)
+    if (isNaN(mins) || mins < 0) { alert('Masukkan angka menit yang valid (0 = nonaktif)'); return }
+    await saveSetting('kasir_timeout_minutes', String(mins))
+    alert(mins > 0 ? `Auto logout kasir di-set ${mins} menit.` : 'Auto logout kasir dinonaktifkan.')
+  }
+
   function handleLogoFile(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
     if (!file) return
@@ -145,9 +155,9 @@ export default function AdminPage() {
   if (!user) return null
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="bg-gray-800 text-white px-4 py-3 flex justify-between items-center">
-        <h1 className="text-lg font-bold tracking-wide">⚙️ Master Jasa</h1>
+    <div className="app-shell">
+      <div className="topbar px-4 py-3 flex justify-between items-center">
+        <h1 className="topbar-title text-lg">⚙️ Master Jasa</h1>
         <div className="flex items-center gap-2 md:gap-3">
           <span className="hidden md:inline text-sm text-gray-300">{user?.role === 'admin' ? 'Administrator' : user?.role} (admin)</span>
           <div className="relative">
@@ -155,7 +165,7 @@ export default function AdminPage() {
             {showMenu && (
               <>
                 <div className="fixed inset-0 z-40" onClick={() => setShowMenu(false)} />
-                <div className="absolute right-0 top-full mt-1 bg-gray-800 border border-gray-700 rounded-xl shadow-xl min-w-[140px] py-1 z-50">
+                <div className="absolute right-0 top-full mt-1 menu-panel rounded-xl min-w-[150px] py-1.5 z-50 text-white">
                   <button onClick={() => { setShowMenu(false); router.push('/pos') }} className="w-full text-left text-sm px-4 py-2 hover:bg-gray-700 transition">🏠 Main</button>
                   <button onClick={() => { setShowMenu(false); router.push('/admin/discounts') }} className="w-full text-left text-sm px-4 py-2 hover:bg-gray-700 transition">🏷️ Diskon</button>
                   <button onClick={() => { setShowMenu(false); router.push('/admin/loyalty') }} className="w-full text-left text-sm px-4 py-2 hover:bg-gray-700 transition">🎁 Loyalty</button>
@@ -191,7 +201,7 @@ export default function AdminPage() {
               ))}
             </select>
             <div className="flex gap-2">
-              <button type="submit" className="flex-1 bg-gray-800 text-white py-2.5 rounded-xl text-sm font-medium hover:bg-gray-700 transition">
+              <button type="submit" className="flex-1 btn-gold py-2.5 rounded-xl text-sm">
                 {editId ? 'Update' : 'Simpan'}
               </button>
               {editId && <button type="button" onClick={() => { setEditId(null); setName(''); setPrice(''); setCatId('') }}
@@ -209,7 +219,7 @@ export default function AdminPage() {
             <form onSubmit={handleEditCategory} className="flex flex-col md:flex-row gap-2">
               <input type="text" placeholder="Nama Kategori" value={editCatName} onChange={e => setEditCatName(e.target.value)}
                 className="flex-1 px-4 py-2.5 border border-gray-200 rounded-xl text-gray-900 text-sm focus:outline-none focus:border-gray-400 transition" required />
-              <button type="submit" className="bg-gray-800 text-white px-4 py-2.5 rounded-xl text-sm font-medium hover:bg-gray-700 transition">Update</button>
+              <button type="submit" className="btn-gold px-4 py-2.5 rounded-xl text-sm">Update</button>
               <button type="button" onClick={() => { setEditCatId(null); setEditCatName('') }}
                 className="bg-gray-100 text-gray-600 px-4 py-2.5 rounded-xl text-sm font-medium hover:bg-gray-200 transition">Batal</button>
             </form>
@@ -227,7 +237,7 @@ export default function AdminPage() {
                   </optgroup>
                 ))}
               </select>
-              <button type="submit" className="w-full bg-gray-800 text-white px-4 py-2.5 rounded-xl text-sm font-medium hover:bg-gray-700 transition">Tambah</button>
+              <button type="submit" className="w-full btn-gold px-4 py-2.5 rounded-xl text-sm">Tambah</button>
             </form>
           )}
           <div className="mt-4 space-y-1.5">
@@ -272,7 +282,7 @@ export default function AdminPage() {
               <input type="text" placeholder="Nama Studio (judul header POS)" value={shopName}
                 onChange={e => setShopName(e.target.value)}
                 className="flex-1 px-4 py-2 border border-gray-200 rounded-xl text-gray-900 text-sm focus:outline-none focus:border-gray-400 transition" />
-              <button type="submit" className="bg-gray-800 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-gray-700 transition">Simpan Nama</button>
+              <button type="submit" className="btn-gold px-4 py-2 rounded-xl text-sm">Simpan Nama</button>
             </form>
             <p className="text-xs text-gray-500 mt-2">Judul di pojok kiri atas halaman POS &amp; nama di struk. Kosong = pakai default &quot;Ayunda Beauty Studio&quot;.</p>
 
@@ -284,7 +294,7 @@ export default function AdminPage() {
                   <img src={posLogo || '/bg.jpeg'} alt="Logo preview" className="max-w-full max-h-full object-contain" />
                 </div>
                 <div className="flex flex-col gap-2">
-                  <label className="bg-gray-800 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-gray-700 transition cursor-pointer text-center">
+                  <label className="btn-gold px-4 py-2 rounded-xl text-sm cursor-pointer text-center">
                     Pilih Gambar
                     <input type="file" accept="image/*" onChange={handleLogoFile} className="hidden" />
                   </label>
@@ -305,9 +315,21 @@ export default function AdminPage() {
               <input type="text" placeholder="QRIS Merchant ID / URL" value={qrisMerchant}
                 onChange={e => setQrisMerchant(e.target.value)}
                 className="flex-1 px-4 py-2 border border-gray-200 rounded-xl text-gray-900 text-sm focus:outline-none focus:border-gray-400 transition" />
-              <button type="submit" className="bg-gray-800 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-gray-700 transition">Simpan</button>
+              <button type="submit" className="btn-gold px-4 py-2 rounded-xl text-sm">Simpan</button>
             </form>
             <p className="text-xs text-gray-500 mt-2">Masukkan nomor/URL QRIS merchant. Akan ditampilkan sebagai QR code saat pembayaran QRIS.</p>
+          </div>
+
+          {/* Auto Logout Kasir */}
+          <div className="mb-6 p-4 bg-gray-50 rounded-xl border border-gray-200">
+            <h3 className="font-bold text-gray-800 mb-2 text-sm">Auto Logout Kasir</h3>
+            <form onSubmit={handleSaveTimeout} className="flex flex-col md:flex-row gap-2">
+              <input type="number" min="0" placeholder="Menit (0 = nonaktif)" value={kasirTimeout}
+                onChange={e => setKasirTimeout(e.target.value)}
+                className="flex-1 px-4 py-2 input-elegant text-gray-900 text-sm" />
+              <button type="submit" className="btn-gold px-4 py-2 rounded-xl text-sm">Simpan</button>
+            </form>
+            <p className="text-xs text-gray-500 mt-2">Kasir akan otomatis logout setelah tidak ada aktivitas selama X menit. Isi <strong>0</strong> untuk menonaktifkan. Tidak berlaku untuk admin/super admin.</p>
           </div>
 
           <h2 className="font-bold text-gray-800 mb-3 text-sm uppercase tracking-wider">Daftar Jasa</h2>

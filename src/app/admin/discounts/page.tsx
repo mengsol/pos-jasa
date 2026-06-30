@@ -88,16 +88,16 @@ export default function DiscountsPage() {
   const isActive = (d: Discount) => d.active && new Date(d.dateFrom) <= new Date() && new Date(d.dateTo) >= new Date()
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="bg-gray-800 text-white px-4 py-3 flex justify-between items-center">
-        <h1 className="text-base md:text-lg font-bold tracking-wide">🏷️ Diskon</h1>
+    <div className="app-shell">
+      <div className="topbar px-4 py-3 flex justify-between items-center">
+        <h1 className="topbar-title text-base md:text-lg">🏷️ Diskon</h1>
         <div className="flex items-center gap-2 md:gap-3">
           <div className="relative">
             <button onClick={() => setShowMenu(!showMenu)} className="text-xs md:text-sm bg-gray-700 px-3 py-1.5 rounded-lg hover:bg-gray-600 transition">☰ Menu</button>
             {showMenu && (
               <>
                 <div className="fixed inset-0 z-40" onClick={() => setShowMenu(false)} />
-                <div className="absolute right-0 top-full mt-1 bg-gray-800 border border-gray-700 rounded-xl shadow-xl min-w-[140px] py-1 z-50">
+                <div className="absolute right-0 top-full mt-1 menu-panel rounded-xl min-w-[150px] py-1.5 z-50 text-white">
                   <button onClick={() => { setShowMenu(false); router.push('/pos') }} className="w-full text-left text-sm px-4 py-2 hover:bg-gray-700 transition">🏠 Main</button>
                   <button onClick={() => { setShowMenu(false); router.push('/admin') }} className="w-full text-left text-sm px-4 py-2 hover:bg-gray-700 transition">⚙️ Master Jasa</button>
                   <button onClick={() => { setShowMenu(false); router.push('/admin/loyalty') }} className="w-full text-left text-sm px-4 py-2 hover:bg-gray-700 transition">🎁 Loyalty</button>
@@ -167,7 +167,7 @@ export default function DiscountsPage() {
               </div>
             )}
 
-            <button type="submit" className="w-full md:w-auto bg-gray-800 text-white px-6 py-2.5 rounded-xl text-sm font-medium hover:bg-gray-700 transition">
+            <button type="submit" className="w-full md:w-auto btn-gold px-6 py-2.5 rounded-xl text-sm">
               Simpan Diskon
             </button>
           </form>

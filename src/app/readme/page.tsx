@@ -16,9 +16,9 @@ export default function ReadmePage() {
   }, [router])
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="bg-gray-800 text-white px-4 py-3 flex justify-between items-center">
-        <h1 className="text-base md:text-lg font-bold tracking-wide">📖 Manual Book</h1>
+    <div className="app-shell">
+      <div className="topbar px-4 py-3 flex justify-between items-center">
+        <h1 className="topbar-title text-base md:text-lg">📖 Manual Book</h1>
         <div className="flex items-center gap-2 md:gap-3">
           <span className="hidden md:inline text-sm text-gray-300">{user?.name} ({user?.role})</span>
           <div className="relative">
@@ -26,7 +26,7 @@ export default function ReadmePage() {
             {showMenu && (
               <>
                 <div className="fixed inset-0 z-40" onClick={() => setShowMenu(false)} />
-                <div className="absolute right-0 top-full mt-1 bg-gray-800 border border-gray-700 rounded-xl shadow-xl min-w-[140px] py-1 z-50">
+                <div className="absolute right-0 top-full mt-1 menu-panel rounded-xl min-w-[150px] py-1.5 z-50 text-white">
                   <button onClick={() => { setShowMenu(false); router.push('/pos') }} className="w-full text-left text-sm px-4 py-2 hover:bg-gray-700 transition">🏠 Main</button>
                   {isAdminRole(user?.role) && (
                     <>

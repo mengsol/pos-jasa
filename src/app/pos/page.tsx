@@ -340,9 +340,9 @@ export default function POSPage() {
   const fmt = (n: number) => 'Rp ' + n.toLocaleString('id-ID')
 
   return (
-    <div className="min-h-screen bg-gray-900">
-      <div className="bg-gray-800 text-white px-4 py-3 flex justify-between items-center">
-        <h1 className="text-base md:text-lg font-bold tracking-wide">{shopName || 'Ayunda Beauty Studio'}</h1>
+    <div className="app-shell">
+      <div className="topbar px-4 py-3 flex justify-between items-center">
+        <h1 className="topbar-title text-base md:text-lg">{shopName || 'Ayunda Beauty Studio'}</h1>
         <div className="flex items-center gap-2 md:gap-3">
           <span className="hidden md:inline text-sm text-gray-300">{user?.name} ({user?.role})</span>
           <div className="relative">
@@ -350,7 +350,7 @@ export default function POSPage() {
             {showMenu && (
               <>
                 <div className="fixed inset-0 z-40" onClick={() => setShowMenu(false)} />
-                <div className="absolute right-0 top-full mt-1 bg-gray-800 border border-gray-700 rounded-xl shadow-xl min-w-[140px] py-1 z-50">
+                <div className="absolute right-0 top-full mt-1 menu-panel rounded-xl min-w-[150px] py-1.5 z-50 text-white">
               {isAdminRole(user?.role) && (
                 <>
                   <button onClick={() => { setShowMenu(false); router.push('/admin') }} className="w-full text-left text-sm px-4 py-2 hover:bg-gray-700 transition">⚙️ Master Jasa</button>
@@ -376,7 +376,7 @@ export default function POSPage() {
         <div className="flex-1 p-3 md:p-4 overflow-y-auto flex flex-col">
           <input type="text" placeholder="Cari jasa..." value={search}
             onChange={e => setSearch(e.target.value)}
-            className="w-full px-4 py-2.5 border border-gray-200 rounded-xl mb-3 text-gray-900 bg-white text-sm focus:outline-none focus:border-gray-400 transition" />
+            className="w-full px-4 py-2.5 input-elegant mb-3 text-gray-900 text-sm" />
 
           <div className="flex-1 md:bg-[image:var(--pos-logo)] md:bg-contain md:bg-top md:bg-no-repeat rounded-lg p-3"
             style={{ ['--pos-logo']: `url("${posLogo || '/bg.jpeg'}")` } as React.CSSProperties}>
@@ -415,7 +415,7 @@ export default function POSPage() {
                   const hasContent = childEntries.length > 0 || parent.directServices.length > 0
 
                   return (
-                    <div key={parentId} className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-md border border-white/50 overflow-hidden">
+                    <div key={parentId} className="card-elegant overflow-hidden">
                       {/* Parent header — click to expand */}
                       <button onClick={() => toggleParent(parentId)}
                         className="w-full flex items-center justify-between px-4 py-3 hover:bg-gray-50/50 transition">
@@ -580,7 +580,7 @@ export default function POSPage() {
             </div>
             {!showPay ? (
               <button onClick={() => setShowPay(true)} disabled={cart.length === 0}
-                className="w-full bg-gray-800 text-white py-3 rounded-xl font-bold hover:bg-gray-700 disabled:opacity-40 transition-all duration-200 text-lg">Bayar</button>
+                className="w-full btn-gold py-3 rounded-xl disabled:opacity-40 text-lg">Bayar</button>
             ) : (
               <div className="space-y-2">
                 <select value={payMethod} onChange={e => setPayMethod(e.target.value)}
@@ -699,7 +699,7 @@ export default function POSPage() {
                 <span>Total</span><span>{fmt(total)}</span>
               </div>
               <button onClick={() => { setShowCart(false); setShowPay(true) }} disabled={cart.length === 0}
-                className="w-full bg-gray-800 text-white py-3 rounded-xl font-bold disabled:opacity-40 transition">Bayar</button>
+                className="w-full btn-gold py-3 rounded-xl disabled:opacity-40">Bayar</button>
             </div>
           </div>
         </div>
@@ -818,7 +818,7 @@ export default function POSPage() {
               <div className="center sm" style={{color:'#333'}}>Terima kasih!</div>
               </div>
             <div className="flex gap-2 mt-4">
-              <button onClick={printReceipt} className="flex-1 bg-gray-800 text-white py-2 rounded-xl font-bold">Print Struk</button>
+              <button onClick={printReceipt} className="flex-1 btn-gold py-2 rounded-xl">Print Struk</button>
               <button onClick={() => setReceipt(null)} className="flex-1 bg-gray-200 py-2 rounded-xl text-gray-700 font-medium">Tutup</button>
             </div>
             </div>

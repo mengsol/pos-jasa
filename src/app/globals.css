@@ -3,6 +3,14 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+
+  /* Elegant beauty palette — rose-gold + warm neutrals */
+  --rose: #c98a6b;
+  --rose-soft: #d8a07a;
+  --rose-deep: #b06f5a;
+  --plum-900: #2a2024;
+  --plum-800: #382a2e;
+  --cream: #fbf6f3;
 }
 
 @theme inline {
@@ -12,15 +20,86 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+body {
+  color: var(--foreground);
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer components {
+  /* ===== Page shells ===== */
+  .app-shell {
+    min-height: 100vh;
+    background:
+      radial-gradient(1100px 560px at 100% -12%, rgba(216, 160, 122, 0.22), transparent 60%),
+      radial-gradient(820px 480px at -8% 112%, rgba(201, 138, 107, 0.16), transparent 55%),
+      linear-gradient(135deg, #f7f1ed 0%, #fdf8f5 45%, #f3ece7 100%);
+  }
+
+  /* ===== Top header bar ===== */
+  .topbar {
+    color: #fff;
+    background: linear-gradient(135deg, #3a2c30 0%, #2a2024 55%, #382a2e 100%);
+    border-bottom: 1px solid rgba(216, 160, 122, 0.28);
+    box-shadow: 0 8px 28px -16px rgba(40, 26, 30, 0.7);
+  }
+  .topbar-title {
+    font-weight: 600;
+    letter-spacing: 0.16em;
+  }
+  .topbar-title .accent {
+    background: linear-gradient(135deg, #e6c6a8, #d8a07a);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* ===== Buttons ===== */
+  .btn-gold {
+    color: #fff;
+    font-weight: 600;
+    background: linear-gradient(135deg, #c98a6b 0%, #d8a07a 50%, #c79873 100%);
+    box-shadow: 0 12px 26px -12px rgba(176, 111, 90, 0.7);
+    transition: filter 0.2s ease, box-shadow 0.2s ease, transform 0.05s ease;
+  }
+  .btn-gold:hover:not(:disabled) {
+    filter: brightness(1.06);
+    box-shadow: 0 14px 30px -10px rgba(176, 111, 90, 0.8);
+  }
+  .btn-gold:active:not(:disabled) { transform: translateY(1px); }
+  .btn-gold:disabled { opacity: 0.4; box-shadow: none; }
+
+  /* ===== Surfaces ===== */
+  .card-elegant {
+    background: rgba(255, 255, 255, 0.88);
+    backdrop-filter: blur(6px);
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    border-radius: 1rem;
+    box-shadow: 0 20px 44px -26px rgba(120, 80, 70, 0.35);
+  }
+
+  /* ===== Dropdown menu panel ===== */
+  .menu-panel {
+    background: linear-gradient(180deg, #342730 0%, #281f23 100%);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 24px 50px -20px rgba(20, 12, 16, 0.8);
+  }
+  .menu-item {
+    width: 100%;
+    text-align: left;
+    transition: background 0.15s ease;
+  }
+  .menu-item:hover { background: rgba(216, 160, 122, 0.16); }
+
+  /* ===== Inputs ===== */
+  .input-elegant {
+    background: #fff;
+    border: 1px solid #ead9cf;
+    border-radius: 0.75rem;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+  .input-elegant:focus {
+    outline: none;
+    border-color: #d8a07a;
+    box-shadow: 0 0 0 3px rgba(216, 160, 122, 0.18);
+  }
 }

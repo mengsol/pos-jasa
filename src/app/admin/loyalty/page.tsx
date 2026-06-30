@@ -55,9 +55,9 @@ export default function LoyaltyConfigPage() {
   if (!user || !config) return null
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="bg-gray-800 text-white px-4 py-3 flex justify-between items-center">
-        <h1 className="text-lg font-bold tracking-wide">🎁 Loyalty Reward</h1>
+    <div className="app-shell">
+      <div className="topbar px-4 py-3 flex justify-between items-center">
+        <h1 className="topbar-title text-lg">🎁 Loyalty Reward</h1>
         <button onClick={() => router.push('/pos')} className="text-sm bg-gray-700 px-3 py-1.5 rounded-lg hover:bg-gray-600 transition">← Kembali</button>
       </div>
 
@@ -161,7 +161,7 @@ export default function LoyaltyConfigPage() {
             <button
               type="submit"
               disabled={saving}
-              className="w-full bg-gray-800 text-white py-3 rounded-xl font-bold hover:bg-gray-700 disabled:opacity-50 transition"
+              className="w-full btn-gold py-3 rounded-xl disabled:opacity-50"
             >
               {saving ? 'Menyimpan...' : 'Simpan Konfigurasi'}
             </button>

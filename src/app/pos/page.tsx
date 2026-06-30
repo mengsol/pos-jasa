@@ -33,6 +33,8 @@ export default function POSPage() {
   const [showPay, setShowPay] = useState(false)
   const [qrisUrl, setQrisUrl] = useState('')
   const [qrisDataUrl, setQrisDataUrl] = useState('')
+  const [shopName, setShopName] = useState('')
+  const [posLogo, setPosLogo] = useState('')
   const [showCart, setShowCart] = useState(false)
   const [showMenu, setShowMenu] = useState(false)
   const [payLoading, setPayLoading] = useState(false)
@@ -72,6 +74,8 @@ export default function POSPage() {
 
     settingsPromise.then(r => r.json()).then(s => {
       if (s.qris_merchant_id) setQrisUrl(s.qris_merchant_id)
+      if (s.shop_name) setShopName(s.shop_name)
+      if (s.pos_logo_image) setPosLogo(s.pos_logo_image)
     })
 
     discountsPromise.then(r => r.json()).then(data => {
@@ -337,7 +341,7 @@ export default function POSPage() {
   return (
     <div className="min-h-screen bg-gray-900">
       <div className="bg-gray-800 text-white px-4 py-3 flex justify-between items-center">
-        <h1 className="text-base md:text-lg font-bold tracking-wide">Ayunda Beauty Studio</h1>
+        <h1 className="text-base md:text-lg font-bold tracking-wide">{shopName || 'Ayunda Beauty Studio'}</h1>
         <div className="flex items-center gap-2 md:gap-3">
           <span className="hidden md:inline text-sm text-gray-300">{user?.name} ({user?.role})</span>
           <div className="relative">
@@ -373,7 +377,8 @@ export default function POSPage() {
             onChange={e => setSearch(e.target.value)}
             className="w-full px-4 py-2.5 border border-gray-200 rounded-xl mb-3 text-gray-900 bg-white text-sm focus:outline-none focus:border-gray-400 transition" />
 
-          <div className="flex-1 md:bg-[url('/bg.jpeg')] md:bg-contain md:bg-top md:bg-no-repeat rounded-lg p-3">
+          <div className="flex-1 md:bg-[image:var(--pos-logo)] md:bg-contain md:bg-top md:bg-no-repeat rounded-lg p-3"
+            style={{ ['--pos-logo']: `url("${posLogo || '/bg.jpeg'}")` } as React.CSSProperties}>
             {!discountsLoaded ? (
               <div className="flex items-center justify-center h-32">
                 <p className="text-gray-400 text-sm">Memuat data...</p>
@@ -765,7 +770,7 @@ export default function POSPage() {
             />
             <div className="relative text-black">
             <div ref={receiptRef}>
-              <div className="center bold" style={{fontSize:'14px', color:'#000'}}>AYUNDA BEAUTY STUDIO</div>
+              <div className="center bold" style={{fontSize:'14px', color:'#000'}}>{(shopName || 'Ayunda Beauty Studio').toUpperCase()}</div>
               <div className="center sm" style={{color:'#333'}}>{receipt.createdAt}</div>
               <div className="line" />
               <div className="sm" style={{color:'#000'}}>No : {receipt.invoiceNo}</div>

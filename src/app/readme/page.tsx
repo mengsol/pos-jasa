@@ -31,6 +31,7 @@ export default function ReadmePage() {
                     <>
                       <button onClick={() => { setShowMenu(false); router.push('/admin') }} className="w-full text-left text-sm px-4 py-2 hover:bg-gray-700 transition">⚙️ Master Jasa</button>
                       <button onClick={() => { setShowMenu(false); router.push('/admin/discounts') }} className="w-full text-left text-sm px-4 py-2 hover:bg-gray-700 transition">🏷️ Diskon</button>
+                      <button onClick={() => { setShowMenu(false); router.push('/admin/loyalty') }} className="w-full text-left text-sm px-4 py-2 hover:bg-gray-700 transition">🎁 Loyalty</button>
                       <button onClick={() => { setShowMenu(false); router.push('/users') }} className="w-full text-left text-sm px-4 py-2 hover:bg-gray-700 transition">👥 Users</button>
                       <button onClick={() => { setShowMenu(false); router.push('/pembukuan') }} className="w-full text-left text-sm px-4 py-2 hover:bg-gray-700 transition">📊 Report</button>
                     </>
@@ -45,13 +46,15 @@ export default function ReadmePage() {
         </div>
       </div>
 
-      <div className="max-w-3xl mx-auto p-4 md:p-6">
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8 space-y-8 text-gray-700 text-sm leading-relaxed">
+      <div className="max-w-6xl mx-auto p-4 md:p-6">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8 text-gray-700 text-sm leading-relaxed">
 
-          <div className="text-center pb-4 border-b border-gray-100">
+          <div className="text-center pb-4 mb-6 border-b border-gray-100">
             <h2 className="text-2xl font-bold text-gray-800">Ayunda Beauty Studio</h2>
             <p className="text-gray-500 mt-1">Point of Sale — Manual Book</p>
           </div>
+
+          <div className="columns-1 md:columns-2 lg:columns-3 gap-6 [&>section]:break-inside-avoid [&>section]:mb-6">
 
           {/* Login */}
           <section>
@@ -73,6 +76,7 @@ export default function ReadmePage() {
               <li>Klik <strong>Bayar</strong> → pilih metode (Cash/Transfer/QRIS)</li>
               <li>Masukkan jumlah bayar → klik <strong>Konfirmasi</strong></li>
               <li>Struk akan muncul — bisa di-print atau tutup</li>
+              <li><strong>Data Pelanggan (opsional):</strong> isi No HP &amp; Nama sebelum bayar untuk ikut program loyalty</li>
             </ul>
             <div className="mt-2 p-3 bg-blue-50 rounded-xl text-xs text-blue-700">
               💡 <strong>Tips:</strong> Di HP, klik icon 🛒 di kanan bawah untuk buka keranjang
@@ -88,6 +92,36 @@ export default function ReadmePage() {
               <li>Harga asli dicoret, harga diskon ditampilkan</li>
               <li>Diskon bisa <strong>stack</strong> (level kategori + level item dijumlahkan)</li>
               <li>Harga final dihitung ulang oleh server saat checkout (selalu akurat)</li>
+            </ul>
+          </section>
+
+          {/* Loyalty Reward */}
+          <section>
+            <h3 className="text-lg font-bold text-gray-800 mb-2">🎁 Loyalty Reward</h3>
+            <p>Pelanggan yang sering datang bisa dapat <strong>treatment gratis</strong>. Cara kerjanya:</p>
+            <ul className="list-disc pl-5 space-y-1 mt-1">
+              <li>Kasir isi <strong>No HP</strong> pelanggan di kolom Data Pelanggan saat transaksi</li>
+              <li>Sistem menghitung jumlah transaksi pelanggan dalam periode tertentu</li>
+              <li>Jika sudah mencapai target (mis. <strong>10x dalam 30 hari</strong>), reward <strong>ter-unlock</strong> otomatis</li>
+              <li>Saat pelanggan datang lagi, muncul <strong>banner reward</strong> → kasir klik <strong>Klaim Sekarang</strong> → treatment gratis masuk keranjang (harga 0)</li>
+              <li>Klik <strong>Nanti Saja</strong> jika belum mau klaim — reward tersimpan sampai batas waktu klaim</li>
+              <li>Reward punya <strong>batas waktu klaim</strong> (mis. 60 hari). Lewat itu, reward hangus</li>
+              <li>Item reward ditandai badge <span className="bg-yellow-100 text-yellow-700 text-xs px-1 rounded font-bold">🎁 REWARD</span> dan <strong>GRATIS</strong> di Transaksi &amp; Report</li>
+            </ul>
+            <div className="mt-2 p-3 bg-yellow-50 rounded-xl text-xs text-yellow-800">
+              💡 <strong>Catatan:</strong> Program loyalty harus diaktifkan dulu oleh admin di menu <strong>🎁 Loyalty</strong>.
+            </div>
+          </section>
+
+          {/* Admin - Loyalty */}
+          <section>
+            <h3 className="text-lg font-bold text-gray-800 mb-2">🎁 Admin — Loyalty</h3>
+            <ul className="list-disc pl-5 space-y-1">
+              <li><strong>Jumlah Transaksi Minimum:</strong> berapa kali transaksi untuk dapat reward</li>
+              <li><strong>Rentang Hari (Window):</strong> transaksi dihitung dalam X hari terakhir</li>
+              <li><strong>Batas Waktu Klaim:</strong> berapa hari reward berlaku setelah ter-unlock</li>
+              <li><strong>Treatment Gratis:</strong> pilih treatment reward, atau kosongkan agar kasir bebas pilih</li>
+              <li><strong>Aktif/Nonaktif:</strong> centang toggle untuk mengaktifkan program → Simpan Konfigurasi</li>
             </ul>
           </section>
 
@@ -118,8 +152,9 @@ export default function ReadmePage() {
             <h3 className="text-lg font-bold text-gray-800 mb-2">☰ Menu</h3>
             <p>Klik tombol <strong>☰ Menu</strong> di kanan atas untuk akses:</p>
             <ul className="list-disc pl-5 space-y-1 mt-1">
-              <li><strong>⚙️ Master Jasa</strong> — Kelola jasa, kategori, QRIS (admin only)</li>
+              <li><strong>⚙️ Master Jasa</strong> — Kelola jasa, kategori, QRIS, branding (admin only)</li>
               <li><strong>🏷️ Diskon</strong> — Kelola diskon (admin only)</li>
+              <li><strong>🎁 Loyalty</strong> — Konfigurasi program reward (admin only)</li>
               <li><strong>👥 Users</strong> — Kelola user (admin only)</li>
               <li><strong>📊 Report</strong> — Laporan pendapatan (admin only)</li>
               <li><strong>🧾 Transaksi</strong> — Lihat transaksi hari ini</li>
@@ -138,6 +173,7 @@ export default function ReadmePage() {
               <li><strong>Tambah Kategori:</strong> Isi nama → Tambah</li>
               <li><strong>Edit/Hapus Kategori:</strong> Klik Edit atau Hapus di list</li>
               <li><strong>QRIS:</strong> Masukkan Merchant ID/URL → Simpan</li>
+              <li><strong>Tampilan / Branding:</strong> ubah <strong>Nama Studio</strong> (judul header &amp; struk) dan <strong>Logo/Gambar tengah POS</strong> (upload gambar, maks 1.5 MB)</li>
             </ul>
           </section>
 
@@ -177,8 +213,10 @@ export default function ReadmePage() {
             </ul>
           </section>
 
+          </div>
+
           {/* Footer */}
-          <div className="text-center pt-4 border-t border-gray-100">
+          <div className="text-center pt-4 mt-2 border-t border-gray-100">
             <p className="text-gray-400 text-xs">© 2026 Ayunda Beauty Studio — POS System</p>
           </div>
         </div>

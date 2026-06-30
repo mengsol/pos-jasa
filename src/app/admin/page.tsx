@@ -18,6 +18,8 @@ export default function AdminPage() {
   const [editId, setEditId] = useState<string | null>(null)
   const [user, setUser] = useState<{ role: string } | null>(null)
   const [qrisMerchant, setQrisMerchant] = useState('')
+  const [shopName, setShopName] = useState('')
+  const [posLogo, setPosLogo] = useState('')
   const router = useRouter()
 
   useEffect(() => {
@@ -31,6 +33,8 @@ export default function AdminPage() {
     loadData()
     fetch('/api/settings').then(r => r.json()).then(s => {
       if (s.qris_merchant_id) setQrisMerchant(s.qris_merchant_id)
+      if (s.shop_name) setShopName(s.shop_name)
+      if (s.pos_logo_image) setPosLogo(s.pos_logo_image)
     })
   }, [router])
 
@@ -93,6 +97,41 @@ export default function AdminPage() {
     alert('QRIS Merchant ID tersimpan!')
   }
 
+  async function saveSetting(key: string, value: string) {
+    await fetch('/api/settings', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ key, value }),
+    })
+  }
+
+  async function handleSaveShopName(e: React.FormEvent) {
+    e.preventDefault()
+    await saveSetting('shop_name', shopName)
+    alert('Nama studio tersimpan!')
+  }
+
+  function handleLogoFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    if (!file.type.startsWith('image/')) { alert('File harus berupa gambar'); return }
+    if (file.size > 1.5 * 1024 * 1024) { alert('Ukuran gambar maksimal 1.5 MB'); return }
+    const reader = new FileReader()
+    reader.onload = async () => {
+      const dataUrl = reader.result as string
+      setPosLogo(dataUrl)
+      await saveSetting('pos_logo_image', dataUrl)
+      alert('Logo tersimpan!')
+    }
+    reader.readAsDataURL(file)
+  }
+
+  async function handleRemoveLogo() {
+    setPosLogo('')
+    await saveSetting('pos_logo_image', '')
+    alert('Logo dikembalikan ke default.')
+  }
+
   const fmt = (n: number) => 'Rp ' + n.toLocaleString('id-ID')
 
   const [showMenu, setShowMenu] = useState(false)
@@ -118,6 +157,7 @@ export default function AdminPage() {
                 <div className="absolute right-0 top-full mt-1 bg-gray-800 border border-gray-700 rounded-xl shadow-xl min-w-[140px] py-1 z-50">
                   <button onClick={() => { setShowMenu(false); router.push('/pos') }} className="w-full text-left text-sm px-4 py-2 hover:bg-gray-700 transition">🏠 Main</button>
                   <button onClick={() => { setShowMenu(false); router.push('/admin/discounts') }} className="w-full text-left text-sm px-4 py-2 hover:bg-gray-700 transition">🏷️ Diskon</button>
+                  <button onClick={() => { setShowMenu(false); router.push('/admin/loyalty') }} className="w-full text-left text-sm px-4 py-2 hover:bg-gray-700 transition">🎁 Loyalty</button>
                   <button onClick={() => { setShowMenu(false); router.push('/users') }} className="w-full text-left text-sm px-4 py-2 hover:bg-gray-700 transition">👥 Users</button>
                   <button onClick={() => { setShowMenu(false); router.push('/pembukuan') }} className="w-full text-left text-sm px-4 py-2 hover:bg-gray-700 transition">📊 Report</button>
                   <button onClick={() => { setShowMenu(false); router.push('/transaksi') }} className="w-full text-left text-sm px-4 py-2 hover:bg-gray-700 transition">🧾 Transaksi</button>
@@ -223,6 +263,38 @@ export default function AdminPage() {
 
         {/* Daftar Jasa */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 md:col-span-2">
+          {/* Branding / Tampilan Settings */}
+          <div className="mb-6 p-4 bg-gray-50 rounded-xl border border-gray-200">
+            <h3 className="font-bold text-gray-800 mb-2 text-sm">Tampilan / Branding</h3>
+            <form onSubmit={handleSaveShopName} className="flex flex-col md:flex-row gap-2">
+              <input type="text" placeholder="Nama Studio (judul header POS)" value={shopName}
+                onChange={e => setShopName(e.target.value)}
+                className="flex-1 px-4 py-2 border border-gray-200 rounded-xl text-gray-900 text-sm focus:outline-none focus:border-gray-400 transition" />
+              <button type="submit" className="bg-gray-800 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-gray-700 transition">Simpan Nama</button>
+            </form>
+            <p className="text-xs text-gray-500 mt-2">Judul di pojok kiri atas halaman POS &amp; nama di struk. Kosong = pakai default &quot;Ayunda Beauty Studio&quot;.</p>
+
+            <div className="mt-4 pt-4 border-t border-gray-200">
+              <p className="text-sm font-medium text-gray-700 mb-2">Logo / Gambar Tengah POS</p>
+              <div className="flex items-center gap-4">
+                <div className="w-28 h-20 bg-white border border-gray-200 rounded-lg overflow-hidden flex items-center justify-center shrink-0">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={posLogo || '/bg.jpeg'} alt="Logo preview" className="max-w-full max-h-full object-contain" />
+                </div>
+                <div className="flex flex-col gap-2">
+                  <label className="bg-gray-800 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-gray-700 transition cursor-pointer text-center">
+                    Pilih Gambar
+                    <input type="file" accept="image/*" onChange={handleLogoFile} className="hidden" />
+                  </label>
+                  {posLogo && (
+                    <button type="button" onClick={handleRemoveLogo} className="text-xs text-red-500 hover:text-red-700 transition">Hapus, pakai default</button>
+                  )}
+                </div>
+              </div>
+              <p className="text-xs text-gray-500 mt-2">Gambar tampil di tengah halaman POS (desktop). Format gambar, maksimal 1.5 MB.</p>
+            </div>
+          </div>
+
           {/* QRIS Settings */}
           <div className="mb-6 p-4 bg-gray-50 rounded-xl border border-gray-200">
             <h3 className="font-bold text-gray-800 mb-2 text-sm">QRIS Settings</h3>

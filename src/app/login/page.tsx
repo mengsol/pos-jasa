@@ -38,7 +38,7 @@ export default function LoginPage() {
         backgroundImage: `linear-gradient(rgba(250,245,242,0.80), rgba(250,245,242,0.88)), url("/bg.jpeg")`,
         backgroundRepeat: 'no-repeat, no-repeat',
         backgroundPosition: 'center, center',
-        backgroundSize: 'cover, min(680px, 82%)',
+        backgroundSize: 'cover, contain',
       }}
     >
       <div className="w-full max-w-sm md:max-w-md">

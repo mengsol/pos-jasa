@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
   const user = await getSession()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const { items, payments, note } = await req.json()
+  const { items, payments, note, customerId } = await req.json()
 
   // Generate invoice number: INV-YYYYMMDD-XXXX
   const today = new Date().toISOString().slice(0, 10).replace(/-/g, '')
@@ -105,6 +105,7 @@ export async function POST(req: NextRequest) {
       invoiceNo,
       outletId: user.outletId || '',
       userId: user.id,
+      customerId: customerId || null,
       totalAmount,
       note,
       items: {

@@ -132,6 +132,19 @@ export default function PembukuanPage() {
           </div>
         </div>
 
+        {/* Reward Summary */}
+        {completedTx.some(t => t.items.some(i => i.serviceName.includes('REWARD') || (i.discountPercent === 100 && i.subtotal === 0))) && (
+          <div className="bg-yellow-50 border border-yellow-200 rounded-2xl p-4 mb-4 flex items-center gap-3">
+            <span className="text-2xl">🎁</span>
+            <div>
+              <p className="text-sm font-medium text-yellow-800">Loyalty Reward</p>
+              <p className="text-xs text-yellow-700">
+                {completedTx.reduce((count, t) => count + t.items.filter(i => i.serviceName.includes('REWARD') || (i.discountPercent === 100 && i.subtotal === 0)).length, 0)} reward diklaim dalam periode ini
+              </p>
+            </div>
+          </div>
+        )}
+
         {/* Grand Total */}
         <div className="bg-green-50 border border-green-200 rounded-2xl p-4 mb-4 text-center">
           <p className="text-sm text-green-700">Total Pendapatan (Completed)</p>
@@ -163,7 +176,12 @@ export default function PembukuanPage() {
                     <td className="px-4 py-2 font-mono text-xs text-gray-800">{t.invoiceNo}</td>
                     <td className="text-gray-600 text-xs whitespace-nowrap">{new Date(t.createdAt).toLocaleString('id-ID')}</td>
                     <td className="text-gray-700 text-xs">{t.user.name}</td>
-                    <td className="text-gray-600 text-xs max-w-[150px] truncate">{t.items.map(i => `${i.serviceName} x${i.qty}`).join(', ')}</td>
+                    <td className="text-gray-600 text-xs max-w-[150px] truncate">
+                      {t.items.map(i => {
+                        const isReward = i.serviceName.includes('REWARD') || (i.discountPercent === 100 && i.subtotal === 0)
+                        return `${i.serviceName} x${i.qty}${isReward ? ' 🎁' : ''}`
+                      }).join(', ')}
+                    </td>
                     <td className="text-right text-xs text-gray-700 whitespace-nowrap">
                       {t.items.map(i => fmt(i.originalPrice || i.price)).join(', ')}
                     </td>
@@ -194,17 +212,24 @@ export default function PembukuanPage() {
                         <div className="space-y-2">
                           <div className="text-xs">
                             <p className="font-medium text-gray-500 uppercase tracking-wider mb-1">Detail:</p>
-                            {t.items.map((item, i) => (
-                              <div key={i} className="flex justify-between py-0.5">
-                                <span className="text-gray-700">
-                                  {item.serviceName} x{item.qty} @ {fmt(item.price)}
-                                  {(item.discountPercent || 0) > 0 && (
-                                    <span className="text-red-500 ml-1">(disc {item.discountPercent}% dari {fmt(item.originalPrice || item.price)})</span>
-                                  )}
-                                </span>
-                                <span className="text-gray-800 font-medium">{fmt(item.subtotal)}</span>
-                              </div>
-                            ))}
+                            {t.items.map((item, i) => {
+                              const isReward = item.serviceName.includes('REWARD') || (item.discountPercent === 100 && item.subtotal === 0)
+                              return (
+                                <div key={i} className="flex justify-between py-0.5">
+                                  <span className="text-gray-700">
+                                    {item.serviceName} x{item.qty} @ {fmt(item.price)}
+                                    {isReward ? (
+                                      <span className="ml-1 inline-block px-1.5 py-0.5 bg-yellow-100 text-yellow-700 text-[10px] font-bold rounded">🎁 LOYALTY REWARD</span>
+                                    ) : (item.discountPercent || 0) > 0 ? (
+                                      <span className="text-red-500 ml-1">(disc {item.discountPercent}% dari {fmt(item.originalPrice || item.price)})</span>
+                                    ) : null}
+                                  </span>
+                                  <span className={`font-medium ${isReward ? 'text-yellow-600' : 'text-gray-800'}`}>
+                                    {isReward ? 'GRATIS' : fmt(item.subtotal)}
+                                  </span>
+                                </div>
+                              )
+                            })}
                           </div>
                           <div className="text-xs border-t border-gray-200 pt-1">
                             <span className="text-gray-500">Bayar: </span>

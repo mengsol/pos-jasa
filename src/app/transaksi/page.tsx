@@ -194,17 +194,22 @@ export default function TransaksiPage() {
               </div>
               {expandedId === t.id && (
                 <div className="px-5 pb-4 border-t border-gray-100 pt-3 space-y-1">
-                  {t.items.map((item, i) => (
-                    <div key={i} className="flex justify-between text-sm text-gray-600">
-                      <span>
-                        {item.serviceName} x{item.qty}
-                        {(item as { discountPercent?: number }).discountPercent ? (
-                          <span className="text-red-500 text-xs ml-1">(disc {(item as { discountPercent?: number }).discountPercent}%)</span>
-                        ) : null}
-                      </span>
-                      <span>{fmt(item.subtotal)}</span>
-                    </div>
-                  ))}
+                  {t.items.map((item, i) => {
+                    const isReward = item.serviceName.includes('REWARD') || ((item as { discountPercent?: number }).discountPercent === 100 && item.subtotal === 0)
+                    return (
+                      <div key={i} className="flex justify-between text-sm text-gray-600">
+                        <span>
+                          {item.serviceName} x{item.qty}
+                          {isReward ? (
+                            <span className="ml-1 inline-block px-1.5 py-0.5 bg-yellow-100 text-yellow-700 text-xs font-bold rounded">🎁 REWARD</span>
+                          ) : (item as { discountPercent?: number }).discountPercent ? (
+                            <span className="text-red-500 text-xs ml-1">(disc {(item as { discountPercent?: number }).discountPercent}%)</span>
+                          ) : null}
+                        </span>
+                        <span>{isReward ? <span className="text-yellow-600 font-medium">GRATIS</span> : fmt(item.subtotal)}</span>
+                      </div>
+                    )
+                  })}
                   <div className="border-t border-dashed border-gray-200 pt-2 mt-2 flex flex-col md:flex-row md:justify-between text-xs text-gray-400 gap-0.5">
                     <span>Bayar: {t.payments.map(p => `${p.method.toUpperCase()} ${fmt(p.amount)}`).join(', ')}</span>
                     {t.payments.reduce((s, p) => s + p.amount, 0) > t.totalAmount && (

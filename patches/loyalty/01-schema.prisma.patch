@@ -1,0 +1,54 @@
+// ============================================================
+// TAMBAHKAN model-model berikut di akhir file prisma/schema.prisma
+// ============================================================
+
+model Customer {
+  id        String   @id @default(cuid())
+  name      String
+  phone     String   @unique
+  note      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  transactions   Transaction[]
+  rewardClaims   RewardClaim[]
+  pendingRewards PendingReward[]
+}
+
+model LoyaltyConfig {
+  id               String  @id @default(cuid())
+  minTransactions  Int     @default(10)    // jumlah transaksi minimum
+  withinDays       Int     @default(30)    // dalam rentang hari
+  claimDaysLimit   Int     @default(60)    // batas hari untuk klaim reward setelah unlock
+  rewardServiceId  String?                 // service yang diberikan gratis (nullable = bebas pilih)
+  isActive         Boolean @default(true)  // aktif/nonaktif fitur
+}
+
+model PendingReward {
+  id          String    @id @default(cuid())
+  customerId  String
+  customer    Customer  @relation(fields: [customerId], references: [id])
+  unlockedAt  DateTime  @default(now())  // kapan reward ter-unlock
+  expiresAt   DateTime                    // batas waktu klaim (unlockedAt + claimDaysLimit)
+  status      String    @default("pending") // pending | claimed | expired
+  claimedAt   DateTime?
+  claimTransactionId String?              // transaksi dimana reward diklaim
+
+  @@index([customerId, status])
+}
+
+model RewardClaim {
+  id            String      @id @default(cuid())
+  customerId    String
+  customer      Customer    @relation(fields: [customerId], references: [id])
+  transactionId String?
+  claimedAt     DateTime    @default(now())
+}
+
+// ============================================================
+// UBAH model Transaction — tambah field customerId (opsional)
+// ============================================================
+
+// Tambahkan field berikut di model Transaction:
+//   customerId  String?
+//   customer    Customer? @relation(fields: [customerId], references: [id])
